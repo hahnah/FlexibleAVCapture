@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'FlexibleAVCapture_Example' do
+  pod 'FlexibleAVCapture', :path => '../'
+
+  target 'FlexibleAVCapture_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
