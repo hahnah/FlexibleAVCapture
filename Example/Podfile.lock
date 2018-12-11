@@ -1,0 +1,16 @@
+PODS:
+  - FlexibleAVCapture (0.1.0)
+
+DEPENDENCIES:
+  - FlexibleAVCapture (from `../`)
+
+EXTERNAL SOURCES:
+  FlexibleAVCapture:
+    :path: ../
+
+SPEC CHECKSUMS:
+  FlexibleAVCapture: fe202e1ea39bb8d668285c4b2f2c18f2bb2ab1dc
+
+PODFILE CHECKSUM: 6e243abbc7afbe45a83be317014a0193fd4d5aa4
+
+COCOAPODS: 1.4.0
