@@ -2,9 +2,10 @@ import Foundation
 import UIKit
 import AVKit
 
-final class Helper {
-    
-    static func convertArrayToSet<T>(array: Array<T>) -> Set<T> {
+//final class Helper {
+extension FlexibleAVCaptureViewController {
+
+    func convertArrayToSet<T>(array: Array<T>) -> Set<T> {
         var set = Set<T>()
         array.forEach { (element) in
             set.insert(element)
@@ -12,7 +13,7 @@ final class Helper {
         return set
     }
     
-    static func exportMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, fullFrameRect: CGRect? = nil, croppingRect: CGRect? = nil, completion: (() -> Void)? = nil) -> Void {
+    func exportMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, fullFrameRect: CGRect? = nil, croppingRect: CGRect? = nil, completion: (() -> Void)? = nil) -> Void {
         
         let avAsset: AVAsset = AVAsset(url: sourceURL)
         
@@ -82,14 +83,14 @@ final class Helper {
         
     }
     
-    static func generateCMTime(movieURL: URL, capturingPoint: Float64) -> CMTime {
+    func generateCMTime(movieURL: URL, capturingPoint: Float64) -> CMTime {
         let asset = AVURLAsset(url: movieURL, options: nil)
         let lastFrameSeconds: Float64 = CMTimeGetSeconds(asset.duration)
         let capturingTime: CMTime = CMTimeMakeWithSeconds(lastFrameSeconds * capturingPoint, 1)
         return capturingTime
     }
     
-    static func captureImage(movieURL: URL, capturingTime: CMTime) -> CGImage? {
+    func captureImage(movieURL: URL, capturingTime: CMTime) -> CGImage? {
         let asset: AVAsset = AVURLAsset(url: movieURL, options: nil)
         let imageGenerator: AVAssetImageGenerator = AVAssetImageGenerator(asset: asset)
         do {
@@ -100,14 +101,14 @@ final class Helper {
         }
     }
     
-    static func calculateTransform(mediaURL: URL) -> CGAffineTransform {
+    func calculateTransform(mediaURL: URL) -> CGAffineTransform {
         let videoAsset: AVAsset = AVAsset(url: mediaURL)
         let videoTrack: AVAssetTrack = videoAsset.tracks(withMediaType: AVMediaType.video)[0]
         let transform = videoTrack.preferredTransform
         return transform
     }
     
-    static func generateThumbnail(sourceImage: UIImage, objectiveEdgeLength: CGFloat) -> UIImage {
+    func generateThumbnail(sourceImage: UIImage, objectiveEdgeLength: CGFloat) -> UIImage {
         let resizedWidth: CGFloat = calculateResizedWidth(sourceImage: sourceImage, objectiveLengthOfShortSide: objectiveEdgeLength)
         let resizedImage: UIImage = resizeImage(sourceImage: sourceImage, objectiveWidth: resizedWidth)
         let thumbnailSize: CGSize = CGSize(width: objectiveEdgeLength, height: objectiveEdgeLength)
@@ -116,14 +117,14 @@ final class Helper {
         return croppedImage
     }
     
-    static func calculateResizedWidth(sourceImage: UIImage, objectiveLengthOfShortSide: CGFloat) -> CGFloat {
+    func calculateResizedWidth(sourceImage: UIImage, objectiveLengthOfShortSide: CGFloat) -> CGFloat {
         let width: CGFloat = sourceImage.size.width
         let height: CGFloat = sourceImage.size.height
         let resizedWidth: CGFloat = width <= height ? objectiveLengthOfShortSide : objectiveLengthOfShortSide * width / height
         return resizedWidth
     }
     
-    static func resizeImage(sourceImage: UIImage, objectiveWidth: CGFloat) -> UIImage {
+    func resizeImage(sourceImage: UIImage, objectiveWidth: CGFloat) -> UIImage {
         let aspectScale: CGFloat = sourceImage.size.height / sourceImage.size.width
         let resizedSize: CGSize = CGSize(width: objectiveWidth, height: objectiveWidth * aspectScale)
         
@@ -136,18 +137,18 @@ final class Helper {
         return resizedImage!
     }
     
-    static func calculateCroppingRect(image: UIImage, objectiveSize: CGSize) -> CGRect {
+    func calculateCroppingRect(image: UIImage, objectiveSize: CGSize) -> CGRect {
         let croppingRect: CGRect = CGRect.init(x: (image.size.width - objectiveSize.width) / 2, y: (image.size.height - objectiveSize.height) / 2, width: objectiveSize.width, height: objectiveSize.height)
         return croppingRect
     }
     
-    static func cropImage(image: UIImage, croppingRect: CGRect) -> UIImage {
+    func cropImage(image: UIImage, croppingRect: CGRect) -> UIImage {
         let croppingRef: CGImage? = image.cgImage!.cropping(to: croppingRect)
         let croppedImage: UIImage = UIImage(cgImage: croppingRef!)
         return croppedImage
     }
     
-    static func calculateCroppingRect(movieSize: CGSize, movieOrientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
+    func calculateCroppingRect(movieSize: CGSize, movieOrientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
         
         let widthPercentage: CGFloat = previewFrameRect.width / fullFrameRect.width
         let heightPercentage: CGFloat  = previewFrameRect.height / fullFrameRect.height
@@ -187,7 +188,7 @@ final class Helper {
         
     }
     
-    private static func calculateProtrudedSize(originalSize: CGSize, boundingSize: CGRect) -> ProtrudedSize {
+    private func calculateProtrudedSize(originalSize: CGSize, boundingSize: CGRect) -> ProtrudedSize {
         let movieAspectRatio: CGFloat = originalSize.height / originalSize.width
         let boundingAspectRatio: CGFloat = boundingSize.height / boundingSize.width
         var protrudedSize: ProtrudedSize = ProtrudedSize()
@@ -223,11 +224,11 @@ final class Helper {
     
     private typealias CroppedOutSize = ProtrudedSize
     
-    private static func isPortrait(orientation: UIImageOrientation) -> Bool {
+    private func isPortrait(orientation: UIImageOrientation) -> Bool {
         return orientation == .left || orientation == .leftMirrored || orientation == .right || orientation == .rightMirrored
     }
     
-    static func calculateOrientationFromMediaURL(_ url: URL) -> (orientation: UIImageOrientation, isPortrait: Bool) {
+    func calculateOrientationFromMediaURL(_ url: URL) -> (orientation: UIImageOrientation, isPortrait: Bool) {
         let videoAsset: AVAsset = AVAsset(url: url)
         let videoTrack: AVAssetTrack = videoAsset.tracks(withMediaType: AVMediaType.video)[0]
         let transform = videoTrack.preferredTransform
@@ -235,7 +236,7 @@ final class Helper {
         return assetInfo
     }
     
-    static func calculateOrientationFromTransform(_ transform: CGAffineTransform) -> (orientation: UIImageOrientation, isPortrait: Bool) {
+    func calculateOrientationFromTransform(_ transform: CGAffineTransform) -> (orientation: UIImageOrientation, isPortrait: Bool) {
         var assetOrientation = UIImageOrientation.up
         var isPortrait = false
         if transform.a == 0 && transform.b == 1.0 && transform.c == -1.0 && transform.d == 0 {

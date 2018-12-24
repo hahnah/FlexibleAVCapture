@@ -2,7 +2,7 @@ import UIKit
 import AVFoundation
 import Photos
 
-class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
+public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     
     var captureSession: AVCaptureSession? = nil
     var videoLayer: AVCaptureVideoPreviewLayer? = nil
@@ -22,7 +22,7 @@ class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputReco
                                     2.0 / 3.0,
                                     1.0]
     
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.black
         self.showCameraPreview()
@@ -37,7 +37,7 @@ class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputReco
         self.forcePreviewFrameToResize(resizingParameter: presetSliderValue)
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
     }
     
@@ -242,12 +242,12 @@ class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputReco
         target.backgroundColor = color
     }
     
-    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+    public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
         let tempFileURL: URL = tempDirectory.appendingPathComponent("mytemp.mov")
         
         let tmpVideoTrack: AVAssetTrack = AVAsset(url: outputFileURL).tracks(withMediaType: AVMediaType.video)[0]
-        let (orientation, _): (UIImageOrientation, Bool) = Helper.calculateOrientationFromTransform(tmpVideoTrack.preferredTransform)
+        let (orientation, _): (UIImageOrientation, Bool) = self.calculateOrientationFromTransform(tmpVideoTrack.preferredTransform)
         let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tmpVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
         
         let photoplayEditorViewController: UIVideoEditorController = UIVideoEditorController()
@@ -272,7 +272,7 @@ class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputReco
     }
     
     func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
-        return Helper.calculateCroppingRect(movieSize: originalMovieSize, movieOrientation: orientation ,previewFrameRect: previewFrameRect, fullFrameRect: fullFrameRect)
+        return self.calculateCroppingRect(movieSize: originalMovieSize, movieOrientation: orientation ,previewFrameRect: previewFrameRect, fullFrameRect: fullFrameRect)
     }
     
 }

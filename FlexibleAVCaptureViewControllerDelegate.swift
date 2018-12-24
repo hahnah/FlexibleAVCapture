@@ -16,16 +16,10 @@ extension FlexibleAVCaptureViewController: UIVideoEditorControllerDelegate, UINa
         let capturedImage: CGImage? = self.captureImage(movieURL: tmpMovieURL, capturingTime: capturingTime)
         let image: UIImage = UIImage(cgImage: capturedImage!)
         let transform: CGAffineTransform = calculateTransform(mediaURL: tmpMovieURL)
-        let uiThumbnail: UIImage = self.generateThumbnail(sourceImage: image, objectiveEdgeLength: self.view.frame.width / 2)
-        let cgThumbnail: CGImage = uiThumbnail.cgImage!
         let (orientation, _): (UIImageOrientation, Bool) = calculateOrientationFromTransform(transform)
-        let orientationAsString = Content.convertOrientationToString(orientation: orientation)
-        
-        let newContent: Content = Content.create()
-        newContent.saveAsNew(image: capturedImage!, thumbnail: cgThumbnail, orientationAsString: orientationAsString)
-        
+
         let documentsDirectory: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let savingURL: URL = documentsDirectory.appendingPathComponent(newContent.movieFileName + newContent.movieFileTypeAsString)
+        let savingURL: URL = documentsDirectory.appendingPathComponent("movie.mov")
         let typeMov: AVFileType = AVFileType.mov
         
         self.exportMovie(sourceURL: tmpMovieURL, destinationURL: savingURL, fileType: typeMov)
