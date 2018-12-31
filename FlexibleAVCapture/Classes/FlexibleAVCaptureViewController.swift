@@ -17,6 +17,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     var isVideoSaved: Bool = false
     
+    public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
+    
     let boundaries: Array<Float> = [0.0,
                                     1.0 / 3.0,
                                     2.0 / 3.0,
@@ -250,13 +252,24 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         let (orientation, _): (UIImageOrientation, Bool) = self.calculateOrientationFromTransform(tmpVideoTrack.preferredTransform)
         let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tmpVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
         
-        let photoplayEditorViewController: UIVideoEditorController = UIVideoEditorController()
-        photoplayEditorViewController.modalTransitionStyle = .crossDissolve
-        photoplayEditorViewController.delegate = self
-        photoplayEditorViewController.videoPath = self.cropMovie(sourceURL: outputFileURL, destinationURL: tempFileURL, fileType: AVFileType.mov, croppingRect: croppingRect, complition: {
-            self.isVideoSaved = false
-            self.present(photoplayEditorViewController, animated: true, completion: nil)
-        }).path
+        let videoEditor: UIVideoEditorController = UIVideoEditorController()
+        videoEditor.modalTransitionStyle = .crossDissolve
+        videoEditor.delegate = self
+        
+        let croppedMovieURL: URL = self.cropMovie(
+            sourceURL: outputFileURL,
+            destinationURL: tempFileURL,
+            fileType: AVFileType.mov,
+            croppingRect: croppingRect,
+            complition: {
+                self.isVideoSaved = false
+                self.flexibleCaptureDelegate?.didCapture(withFileURL: tempFileURL)
+                /*
+                videoEditor.videoPath = tempFileURL.path
+                self.present(videoEditor, animated: true, completion: nil)
+ */
+            })
+        
     }
     
     func cropMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, croppingRect: CGRect, complition: @escaping () -> Void) -> URL {
