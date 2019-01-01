@@ -252,10 +252,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         let (orientation, _): (UIImageOrientation, Bool) = self.calculateOrientationFromTransform(tmpVideoTrack.preferredTransform)
         let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tmpVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
         
-        let videoEditor: UIVideoEditorController = UIVideoEditorController()
-        videoEditor.modalTransitionStyle = .crossDissolve
-        videoEditor.delegate = self
-        
         let croppedMovieURL: URL = self.cropMovie(
             sourceURL: outputFileURL,
             destinationURL: tempFileURL,
@@ -264,10 +260,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             complition: {
                 self.isVideoSaved = false
                 self.flexibleCaptureDelegate?.didCapture(withFileURL: tempFileURL)
-                /*
-                videoEditor.videoPath = tempFileURL.path
-                self.present(videoEditor, animated: true, completion: nil)
- */
             })
         
     }
