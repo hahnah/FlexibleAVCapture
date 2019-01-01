@@ -232,6 +232,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             self.slider.isEnabled = true
             self.changeButtonColor(target: self.recordButton, color: UIColor.gray)
             self.recordButton.setTitle("Record", for: .normal)
+            self.recordButton.isEnabled = false
             
             // update preset slider value
             let userDefaults: UserDefaults = UserDefaults.standard
@@ -258,8 +259,11 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             fileType: AVFileType.mov,
             croppingRect: croppingRect,
             complition: {
-                self.isVideoSaved = false
-                self.flexibleCaptureDelegate?.didCapture(withFileURL: tempFileURL)
+                DispatchQueue.main.async {
+                    self.isVideoSaved = false
+                    self.recordButton.isEnabled = true
+                    self.flexibleCaptureDelegate?.didCapture(withFileURL: tempFileURL)
+                }
             })
         
     }
