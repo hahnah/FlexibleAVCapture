@@ -28,10 +28,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.black
         self.showCameraPreview()
-        self.reflectPresetPreviewFrame()
+        self.applyPresetPreviewFrame()
     }
     
-    func reflectPresetPreviewFrame() {
+    func applyPresetPreviewFrame() {
         let userDefaults: UserDefaults = UserDefaults.standard
         let boundaryForFullFrame: Float = self.boundaries[2]
         userDefaults.register(defaults: ["sliderValueForCameraFrame": boundaryForFullFrame])
