@@ -26,14 +26,14 @@ extension FlexibleAVCaptureViewController {
             ? mixComposition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)!
             : nil
         
-        try! compositionVideoTrack.insertTimeRange(CMTimeRangeMake(kCMTimeZero, avAsset.duration), of: videoTrack, at: kCMTimeZero)
-        try! compositionAudioTrack?.insertTimeRange(CMTimeRangeMake(kCMTimeZero, avAsset.duration), of: audioTrack!, at: kCMTimeZero)
+        try! compositionVideoTrack.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: avAsset.duration), of: videoTrack, at: CMTime.zero)
+        try! compositionAudioTrack?.insertTimeRange(CMTimeRangeMake(start: CMTime.zero, duration: avAsset.duration), of: audioTrack!, at: CMTime.zero)
         
         compositionVideoTrack.preferredTransform = videoTrack.preferredTransform
         
         var croppedVideoComposition: AVMutableVideoComposition? = nil
         if let _croppingRect: CGRect = croppingRect, let _fullFrameRect: CGRect = fullFrameRect {
-            let (movieOrientation, _) : (UIImageOrientation, Bool) = calculateOrientationFromTransform(videoTrack.preferredTransform)
+            let (movieOrientation, _) : (UIImage.Orientation, Bool) = calculateOrientationFromTransform(videoTrack.preferredTransform)
             let needToSwap: Bool = movieOrientation == .left || movieOrientation == .leftMirrored || movieOrientation == .right || movieOrientation == .rightMirrored
             let movieSize: CGSize = videoTrack.naturalSize
             let intendedMovieSize: CGSize = needToSwap ? CGSize(width: movieSize.height, height: movieSize.width) : movieSize
@@ -47,16 +47,16 @@ extension FlexibleAVCaptureViewController {
                 y: -_croppingRect.minY + protrudedSize.halfOfHeight * 2 + croppedOutSize.halfOfHeight * 2)
             
             let layerInstruction: AVMutableVideoCompositionLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: compositionVideoTrack)
-            layerInstruction.setCropRectangle(_croppingRect, at: kCMTimeZero)
-            layerInstruction.setTransform(videoTrack.preferredTransform, at: kCMTimeZero)
-            layerInstruction.setTransform(transform, at: kCMTimeZero)
+            layerInstruction.setCropRectangle(_croppingRect, at: CMTime.zero)
+            layerInstruction.setTransform(videoTrack.preferredTransform, at: CMTime.zero)
+            layerInstruction.setTransform(transform, at: CMTime.zero)
             
             let instruction: AVMutableVideoCompositionInstruction = AVMutableVideoCompositionInstruction()
-            instruction.timeRange = CMTimeRangeMake(kCMTimeZero, avAsset.duration)
+            instruction.timeRange = CMTimeRangeMake(start: CMTime.zero, duration: avAsset.duration)
             instruction.layerInstructions = [layerInstruction]
             croppedVideoComposition = AVMutableVideoComposition()
             croppedVideoComposition?.instructions = [instruction]
-            croppedVideoComposition?.frameDuration = CMTimeMake(1, 30)
+            croppedVideoComposition?.frameDuration = CMTimeMake(value: 1, timescale: 30)
             croppedVideoComposition?.renderSize = CGSize(width: needToSwap ? _croppingRect.height : _croppingRect.width, height: needToSwap ? _croppingRect.width : _croppingRect.height)
         }
         
@@ -80,7 +80,7 @@ extension FlexibleAVCaptureViewController {
         
     }
     
-    internal func calculateCroppingRect(movieSize: CGSize, movieOrientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
+    internal func calculateCroppingRect(movieSize: CGSize, movieOrientation: UIImage.Orientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
         
         let widthPercentage: CGFloat = previewFrameRect.width / fullFrameRect.width
         let heightPercentage: CGFloat  = previewFrameRect.height / fullFrameRect.height
@@ -155,11 +155,11 @@ extension FlexibleAVCaptureViewController {
     
     private typealias CroppedOutSize = ProtrudedSize
     
-    private func isPortrait(orientation: UIImageOrientation) -> Bool {
+    private func isPortrait(orientation: UIImage.Orientation) -> Bool {
         return orientation == .left || orientation == .leftMirrored || orientation == .right || orientation == .rightMirrored
     }
     
-    internal func calculateOrientationFromMediaURL(_ url: URL) -> (orientation: UIImageOrientation, isPortrait: Bool) {
+    internal func calculateOrientationFromMediaURL(_ url: URL) -> (orientation: UIImage.Orientation, isPortrait: Bool) {
         let videoAsset: AVAsset = AVAsset(url: url)
         let videoTrack: AVAssetTrack = videoAsset.tracks(withMediaType: AVMediaType.video)[0]
         let transform = videoTrack.preferredTransform
@@ -167,8 +167,8 @@ extension FlexibleAVCaptureViewController {
         return assetInfo
     }
     
-    internal func calculateOrientationFromTransform(_ transform: CGAffineTransform) -> (orientation: UIImageOrientation, isPortrait: Bool) {
-        var assetOrientation = UIImageOrientation.up
+    internal func calculateOrientationFromTransform(_ transform: CGAffineTransform) -> (orientation: UIImage.Orientation, isPortrait: Bool) {
+        var assetOrientation = UIImage.Orientation.up
         var isPortrait = false
         if transform.a == 0 && transform.b == 1.0 && transform.c == -1.0 && transform.d == 0 {
             assetOrientation = .right

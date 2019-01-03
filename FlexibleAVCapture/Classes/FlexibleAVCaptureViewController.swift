@@ -46,7 +46,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         let reoutputFileURL: URL = tempDirectory.appendingPathComponent("mytemp.mov")
         
         let tempVideoTrack: AVAssetTrack = AVAsset(url: outputFileURL).tracks(withMediaType: AVMediaType.video)[0]
-        let (orientation, _): (UIImageOrientation, Bool) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
+        let (orientation, _): (UIImage.Orientation, Bool) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
         let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tempVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
         
         self.cropMovie(
@@ -80,7 +80,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         // max 60sec
         let captureOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
-        captureOutput.maxRecordedDuration = CMTimeMake(60, 1)
+        captureOutput.maxRecordedDuration = CMTimeMake(value: 60, timescale: 1)
         self.captureSession?.addOutput(captureOutput)
         
         // preview layer
@@ -142,7 +142,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.recordButton = UIButton(frame: CGRect(x: 0,y: 0,width: 140,height: 50))
         self.recordButton.backgroundColor = UIColor.gray
         self.recordButton.layer.masksToBounds = true
-        self.recordButton.setTitle("Record", for: UIControlState.normal)
+        self.recordButton.setTitle("Record", for: UIControl.State.normal)
         self.recordButton.layer.cornerRadius = 20.0
         self.recordButton.layer.position = CGPoint(x: self.view.bounds.width/2, y:self.view.bounds.height-70)
         self.recordButton.addTarget(self, action: #selector(self.onClickRecordButton(sender:)), for: .touchUpInside)
@@ -278,7 +278,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.exportMovie(sourceURL: sourceURL, destinationURL: destinationURL, fileType: fileType, fullFrameRect: self.view.bounds, croppingRect: croppingRect, completion: complition)
     }
     
-    private func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
+    private func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImage.Orientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
         return self.calculateCroppingRect(movieSize: originalMovieSize, movieOrientation: orientation ,previewFrameRect: previewFrameRect, fullFrameRect: fullFrameRect)
     }
     
