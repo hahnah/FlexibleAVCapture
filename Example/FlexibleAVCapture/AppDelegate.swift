@@ -2,8 +2,7 @@
 //  AppDelegate.swift
 //  FlexibleAVCapture
 //
-//  Created by hahnah on 12/09/2018.
-//  Copyright (c) 2018 hahnah. All rights reserved.
+//  Copyright (c) 2019 hahnah. All rights reserved.
 //
 
 import UIKit
