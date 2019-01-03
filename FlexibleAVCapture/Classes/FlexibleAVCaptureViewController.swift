@@ -254,37 +254,29 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
-        let tempFileURL: URL = tempDirectory.appendingPathComponent("mytemp.mov")
+        let reoutputFileURL: URL = tempDirectory.appendingPathComponent("mytemp.mov")
         
-        let tmpVideoTrack: AVAssetTrack = AVAsset(url: outputFileURL).tracks(withMediaType: AVMediaType.video)[0]
-        let (orientation, _): (UIImageOrientation, Bool) = self.calculateOrientationFromTransform(tmpVideoTrack.preferredTransform)
-        let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tmpVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
+        let tempVideoTrack: AVAssetTrack = AVAsset(url: outputFileURL).tracks(withMediaType: AVMediaType.video)[0]
+        let (orientation, _): (UIImageOrientation, Bool) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
+        let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tempVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
         
-        let croppedMovieURL: URL = self.cropMovie(
+        self.cropMovie(
             sourceURL: outputFileURL,
-            destinationURL: tempFileURL,
+            destinationURL: reoutputFileURL,
             fileType: AVFileType.mov,
             croppingRect: croppingRect,
             complition: {
                 DispatchQueue.main.async {
                     self.isVideoSaved = false
                     self.recordButton.isEnabled = true
-                    self.flexibleCaptureDelegate?.didCapture(withFileURL: tempFileURL)
+                    self.flexibleCaptureDelegate?.didCapture(withFileURL: reoutputFileURL)
                 }
             })
         
     }
     
-    func cropMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, croppingRect: CGRect, complition: @escaping () -> Void) -> URL {
-        let sliderValueForFull = self.boundaries[2]
-        if self.slider.value == sliderValueForFull {
-            Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) {_ in
-                complition()
-            }
-            return sourceURL
-        }
+    func cropMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, croppingRect: CGRect, complition: @escaping () -> Void) {
         self.exportMovie(sourceURL: sourceURL, destinationURL: destinationURL, fileType: fileType, fullFrameRect: self.view.bounds, croppingRect: croppingRect, completion: complition)
-        return destinationURL
     }
     
     func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
