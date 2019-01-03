@@ -13,18 +13,18 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
     
-    var captureSession: AVCaptureSession? = nil
-    var videoLayer: AVCaptureVideoPreviewLayer? = nil
-    var slider: UISlider = UISlider()
-    var buttonForFullFrame1: UIButton = UIButton()
-    var buttonForSquareFrame: UIButton = UIButton()
-    var buttonForWideFrame: UIButton = UIButton()
-    var buttonForTallFrame: UIButton = UIButton()
-    var buttonForFullFrame2: UIButton = UIButton()
-    var recordButton: UIButton!
-    var isRecording: Bool = false
-    var isVideoSaved: Bool = false
-    let boundaries: Array<Float> = [0.0,
+    private var captureSession: AVCaptureSession? = nil
+    private var videoLayer: AVCaptureVideoPreviewLayer? = nil
+    private var slider: UISlider = UISlider()
+    private var buttonForFullFrame1: UIButton = UIButton()
+    private var buttonForSquareFrame: UIButton = UIButton()
+    private var buttonForWideFrame: UIButton = UIButton()
+    private var buttonForTallFrame: UIButton = UIButton()
+    private var buttonForFullFrame2: UIButton = UIButton()
+    private var recordButton: UIButton!
+    private var isRecording: Bool = false
+    private var isVideoSaved: Bool = false
+    private let boundaries: Array<Float> = [0.0,
                                     1.0 / 3.0,
                                     2.0 / 3.0,
                                     1.0]
