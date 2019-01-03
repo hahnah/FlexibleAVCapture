@@ -40,7 +40,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         super.viewWillDisappear(animated)
     }
     
-    func showCameraPreview() {
+    private func showCameraPreview() {
         let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
         let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
         
@@ -126,36 +126,36 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
     }
     
-    func getPresetPreviewFrame() -> CGRect {
+    private func getPresetPreviewFrame() -> CGRect {
         return self.view.bounds
     }
     
-    @objc func onSliderChanged(sender: UISlider) {
+    @objc private func onSliderChanged(sender: UISlider) {
         self.videoLayer?.frame = createResizedPreviewFrame(resizingParameter: slider.value)
     }
     
-    @objc func onClickButtonForWideFrame(sender: UIButton) {
+    @objc private func onClickButtonForWideFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(resizingParameter: self.boundaries[0])
     }
     
-    @objc func onClickButtonForSquareFrame(sender: UIButton) {
+    @objc private func onClickButtonForSquareFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(resizingParameter: self.boundaries[1])
     }
     
-    @objc func onClickButtonForFullFrame(sender: UIButton) {
+    @objc private func onClickButtonForFullFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(resizingParameter: self.boundaries[2])
     }
     
-    @objc func onClickButtonForTallFrame(sender: UIButton) {
+    @objc private func onClickButtonForTallFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(resizingParameter: self.boundaries[3])
     }
     
-    func forcePreviewFrameToResize(resizingParameter: Float) {
+    private func forcePreviewFrameToResize(resizingParameter: Float) {
         self.slider.value = resizingParameter
         self.videoLayer?.frame = createResizedPreviewFrame(resizingParameter: self.slider.value)
     }
     
-    @objc func onClickRecordButton(sender: UIButton) {
+    @objc private func onClickRecordButton(sender: UIButton) {
         if !isRecording {
             // start recording
             let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -195,7 +195,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }
     }
     
-    func applyPresetPreviewFrame() {
+    private func applyPresetPreviewFrame() {
         let userDefaults: UserDefaults = UserDefaults.standard
         let boundaryForFullFrame: Float = self.boundaries[2]
         userDefaults.register(defaults: ["sliderValueForCameraFrame": boundaryForFullFrame])
@@ -203,7 +203,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.forcePreviewFrameToResize(resizingParameter: presetSliderValue)
     }
     
-    func createResizedPreviewFrame(resizingParameter: Float) -> CGRect {
+    private func createResizedPreviewFrame(resizingParameter: Float) -> CGRect {
         guard self.boundaries[0] <= resizingParameter && resizingParameter <= self.boundaries[self.boundaries.count - 1] else {
             return self.view.bounds
         }
@@ -246,7 +246,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         return resultRect
     }
     
-    func changeButtonColor(target: UIButton, color: UIColor) {
+    private func changeButtonColor(target: UIButton, color: UIColor) {
         target.backgroundColor = color
     }
     
@@ -273,11 +273,11 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
     }
     
-    func cropMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, croppingRect: CGRect, complition: @escaping () -> Void) {
+    private func cropMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, croppingRect: CGRect, complition: @escaping () -> Void) {
         self.exportMovie(sourceURL: sourceURL, destinationURL: destinationURL, fileType: fileType, fullFrameRect: self.view.bounds, croppingRect: croppingRect, completion: complition)
     }
     
-    func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
+    private func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
         return self.calculateCroppingRect(movieSize: originalMovieSize, movieOrientation: orientation ,previewFrameRect: previewFrameRect, fullFrameRect: fullFrameRect)
     }
     

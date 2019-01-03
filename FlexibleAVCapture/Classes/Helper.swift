@@ -11,7 +11,7 @@ import AVKit
 
 extension FlexibleAVCaptureViewController {
     
-    func exportMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, fullFrameRect: CGRect? = nil, croppingRect: CGRect? = nil, completion: (() -> Void)? = nil) -> Void {
+    internal func exportMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, fullFrameRect: CGRect? = nil, croppingRect: CGRect? = nil, completion: (() -> Void)? = nil) -> Void {
         
         let avAsset: AVAsset = AVAsset(url: sourceURL)
         
@@ -80,7 +80,7 @@ extension FlexibleAVCaptureViewController {
         
     }
     
-    func calculateCroppingRect(movieSize: CGSize, movieOrientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
+    internal func calculateCroppingRect(movieSize: CGSize, movieOrientation: UIImageOrientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
         
         let widthPercentage: CGFloat = previewFrameRect.width / fullFrameRect.width
         let heightPercentage: CGFloat  = previewFrameRect.height / fullFrameRect.height
@@ -159,7 +159,7 @@ extension FlexibleAVCaptureViewController {
         return orientation == .left || orientation == .leftMirrored || orientation == .right || orientation == .rightMirrored
     }
     
-    func calculateOrientationFromMediaURL(_ url: URL) -> (orientation: UIImageOrientation, isPortrait: Bool) {
+    internal func calculateOrientationFromMediaURL(_ url: URL) -> (orientation: UIImageOrientation, isPortrait: Bool) {
         let videoAsset: AVAsset = AVAsset(url: url)
         let videoTrack: AVAssetTrack = videoAsset.tracks(withMediaType: AVMediaType.video)[0]
         let transform = videoTrack.preferredTransform
@@ -167,7 +167,7 @@ extension FlexibleAVCaptureViewController {
         return assetInfo
     }
     
-    func calculateOrientationFromTransform(_ transform: CGAffineTransform) -> (orientation: UIImageOrientation, isPortrait: Bool) {
+    internal func calculateOrientationFromTransform(_ transform: CGAffineTransform) -> (orientation: UIImageOrientation, isPortrait: Bool) {
         var assetOrientation = UIImageOrientation.up
         var isPortrait = false
         if transform.a == 0 && transform.b == 1.0 && transform.c == -1.0 && transform.d == 0 {
