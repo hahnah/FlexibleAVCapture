@@ -1,3 +1,10 @@
+//
+//  Helper.swift
+//  FlexibleAVCapture
+//
+//  Copyright 2019, hahnah
+//
+
 import Foundation
 import UIKit
 import AVKit

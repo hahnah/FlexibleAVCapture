@@ -2,7 +2,7 @@
 //  FlexibleAVCaptureViewControllerDelegate.swift
 //  FlexibleAVCapture
 //
-//  Created by Natsuki HARAI on 2018/12/24.
+//  Copyright 2019, hahnah
 //
 
 import Foundation

@@ -1,3 +1,10 @@
+//
+//  FlexibleAVCaptureViewController.swift
+//  FlexibleAVCapture
+//
+//  Copyright 2019, hahnah
+//
+
 import UIKit
 import AVFoundation
 import Photos
