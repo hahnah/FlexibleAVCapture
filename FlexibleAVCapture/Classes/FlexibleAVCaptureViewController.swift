@@ -11,6 +11,8 @@ import Photos
 
 public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     
+    public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
+    
     var captureSession: AVCaptureSession? = nil
     var videoLayer: AVCaptureVideoPreviewLayer? = nil
     var slider: UISlider = UISlider()
@@ -21,11 +23,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     var buttonForFullFrame2: UIButton = UIButton()
     var recordButton: UIButton!
     var isRecording: Bool = false
-    
     var isVideoSaved: Bool = false
-    
-    public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
-    
     let boundaries: Array<Float> = [0.0,
                                     1.0 / 3.0,
                                     2.0 / 3.0,
@@ -36,14 +34,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.backgroundColor = UIColor.black
         self.showCameraPreview()
         self.applyPresetPreviewFrame()
-    }
-    
-    func applyPresetPreviewFrame() {
-        let userDefaults: UserDefaults = UserDefaults.standard
-        let boundaryForFullFrame: Float = self.boundaries[2]
-        userDefaults.register(defaults: ["sliderValueForCameraFrame": boundaryForFullFrame])
-        let presetSliderValue: Float = userDefaults.object(forKey: "sliderValueForCameraFrame") as! Float
-        self.forcePreviewFrameToResize(resizingParameter: presetSliderValue)
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -144,49 +134,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.videoLayer?.frame = createResizedPreviewFrame(resizingParameter: slider.value)
     }
     
-    func createResizedPreviewFrame(resizingParameter: Float) -> CGRect {
-        guard self.boundaries[0] <= resizingParameter && resizingParameter <= self.boundaries[self.boundaries.count - 1] else {
-            return self.view.bounds
-        }
-        
-        let maximumWidth: CGFloat = self.view.bounds.width
-        let maximumHeight: CGFloat = self.view.bounds.height
-        let minimumWidth: CGFloat = maximumHeight * 0.34
-        let minimumHeight: CGFloat = maximumWidth * 0.34
-        let squareWidth: CGFloat = maximumWidth
-        let squareHeight: CGFloat = maximumWidth
-        
-        var resizingCoefficient: Array<CGFloat> = []
-        for (i, boundary) in self.boundaries.enumerated() {
-            if (i == 0) {
-                resizingCoefficient.append(0.0)
-            } else {
-                resizingCoefficient.append(CGFloat((resizingParameter - self.boundaries[i-1]) / (boundary - self.boundaries[i-1])))
-            }
-        }
-        
-        let resultWidth: CGFloat!
-        let resultHeight: CGFloat!
-        if (resizingParameter < self.boundaries[1]) {
-            // wide(maximumWidth x minimumHeight)  --> square
-            resultWidth = squareWidth
-            resultHeight = minimumHeight + (squareHeight - minimumHeight) * resizingCoefficient[1]
-        } else if (resizingParameter <= self.boundaries[2]) {
-            // square --> full
-            resultWidth = squareWidth + (maximumWidth - squareWidth) * resizingCoefficient[2]
-            resultHeight = squareWidth + (maximumHeight - squareHeight) * resizingCoefficient[2]
-        } else {
-            // full --> tall(minimumHeight x maximumWidth)
-            resultWidth = maximumWidth - (maximumWidth - minimumWidth) * resizingCoefficient[3]
-            resultHeight = maximumHeight
-        }
-        let resultX: CGFloat = (maximumWidth - resultWidth) * 0.5
-        let resultY: CGFloat = (maximumHeight - resultHeight) * 0.5
-        
-        let resultRect: CGRect = CGRect(x: resultX, y: resultY, width: resultWidth, height: resultHeight)
-        return resultRect
-    }
-    
     @objc func onClickButtonForWideFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(resizingParameter: self.boundaries[0])
     }
@@ -246,6 +193,57 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             userDefaults.set(self.slider.value, forKey: "sliderValueForCameraFrame")
             userDefaults.synchronize()
         }
+    }
+    
+    func applyPresetPreviewFrame() {
+        let userDefaults: UserDefaults = UserDefaults.standard
+        let boundaryForFullFrame: Float = self.boundaries[2]
+        userDefaults.register(defaults: ["sliderValueForCameraFrame": boundaryForFullFrame])
+        let presetSliderValue: Float = userDefaults.object(forKey: "sliderValueForCameraFrame") as! Float
+        self.forcePreviewFrameToResize(resizingParameter: presetSliderValue)
+    }
+    
+    func createResizedPreviewFrame(resizingParameter: Float) -> CGRect {
+        guard self.boundaries[0] <= resizingParameter && resizingParameter <= self.boundaries[self.boundaries.count - 1] else {
+            return self.view.bounds
+        }
+        
+        let maximumWidth: CGFloat = self.view.bounds.width
+        let maximumHeight: CGFloat = self.view.bounds.height
+        let minimumWidth: CGFloat = maximumHeight * 0.34
+        let minimumHeight: CGFloat = maximumWidth * 0.34
+        let squareWidth: CGFloat = maximumWidth
+        let squareHeight: CGFloat = maximumWidth
+        
+        var resizingCoefficient: Array<CGFloat> = []
+        for (i, boundary) in self.boundaries.enumerated() {
+            if (i == 0) {
+                resizingCoefficient.append(0.0)
+            } else {
+                resizingCoefficient.append(CGFloat((resizingParameter - self.boundaries[i-1]) / (boundary - self.boundaries[i-1])))
+            }
+        }
+        
+        let resultWidth: CGFloat!
+        let resultHeight: CGFloat!
+        if (resizingParameter < self.boundaries[1]) {
+            // wide(maximumWidth x minimumHeight)  --> square
+            resultWidth = squareWidth
+            resultHeight = minimumHeight + (squareHeight - minimumHeight) * resizingCoefficient[1]
+        } else if (resizingParameter <= self.boundaries[2]) {
+            // square --> full
+            resultWidth = squareWidth + (maximumWidth - squareWidth) * resizingCoefficient[2]
+            resultHeight = squareWidth + (maximumHeight - squareHeight) * resizingCoefficient[2]
+        } else {
+            // full --> tall(minimumHeight x maximumWidth)
+            resultWidth = maximumWidth - (maximumWidth - minimumWidth) * resizingCoefficient[3]
+            resultHeight = maximumHeight
+        }
+        let resultX: CGFloat = (maximumWidth - resultWidth) * 0.5
+        let resultY: CGFloat = (maximumHeight - resultHeight) * 0.5
+        
+        let resultRect: CGRect = CGRect(x: resultX, y: resultY, width: resultWidth, height: resultHeight)
+        return resultRect
     }
     
     func changeButtonColor(target: UIButton, color: UIColor) {
