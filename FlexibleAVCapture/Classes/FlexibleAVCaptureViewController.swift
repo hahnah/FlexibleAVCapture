@@ -40,6 +40,30 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         super.viewWillDisappear(animated)
     }
     
+    public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        
+        let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
+        let reoutputFileURL: URL = tempDirectory.appendingPathComponent("mytemp.mov")
+        
+        let tempVideoTrack: AVAssetTrack = AVAsset(url: outputFileURL).tracks(withMediaType: AVMediaType.video)[0]
+        let (orientation, _): (UIImageOrientation, Bool) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
+        let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tempVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
+        
+        self.cropMovie(
+            sourceURL: outputFileURL,
+            destinationURL: reoutputFileURL,
+            fileType: AVFileType.mov,
+            croppingRect: croppingRect,
+            complition: {
+                DispatchQueue.main.async {
+                    self.isVideoSaved = false
+                    self.recordButton.isEnabled = true
+                    self.flexibleCaptureDelegate?.didCapture(withFileURL: reoutputFileURL)
+                }
+        })
+        
+    }
+    
     private func showCameraPreview() {
         let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
         let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
@@ -126,10 +150,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
     }
     
-    private func getPresetPreviewFrame() -> CGRect {
-        return self.view.bounds
-    }
-    
     @objc private func onSliderChanged(sender: UISlider) {
         self.videoLayer?.frame = createResizedPreviewFrame(resizingParameter: slider.value)
     }
@@ -148,11 +168,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     @objc private func onClickButtonForTallFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(resizingParameter: self.boundaries[3])
-    }
-    
-    private func forcePreviewFrameToResize(resizingParameter: Float) {
-        self.slider.value = resizingParameter
-        self.videoLayer?.frame = createResizedPreviewFrame(resizingParameter: self.slider.value)
     }
     
     @objc private func onClickRecordButton(sender: UIButton) {
@@ -193,6 +208,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             userDefaults.set(self.slider.value, forKey: "sliderValueForCameraFrame")
             userDefaults.synchronize()
         }
+    }
+    
+    private func getPresetPreviewFrame() -> CGRect {
+        return self.view.bounds
     }
     
     private func applyPresetPreviewFrame() {
@@ -246,31 +265,13 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         return resultRect
     }
     
-    private func changeButtonColor(target: UIButton, color: UIColor) {
-        target.backgroundColor = color
+    private func forcePreviewFrameToResize(resizingParameter: Float) {
+        self.slider.value = resizingParameter
+        self.videoLayer?.frame = createResizedPreviewFrame(resizingParameter: self.slider.value)
     }
     
-    public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
-        let reoutputFileURL: URL = tempDirectory.appendingPathComponent("mytemp.mov")
-        
-        let tempVideoTrack: AVAssetTrack = AVAsset(url: outputFileURL).tracks(withMediaType: AVMediaType.video)[0]
-        let (orientation, _): (UIImageOrientation, Bool) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
-        let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tempVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
-        
-        self.cropMovie(
-            sourceURL: outputFileURL,
-            destinationURL: reoutputFileURL,
-            fileType: AVFileType.mov,
-            croppingRect: croppingRect,
-            complition: {
-                DispatchQueue.main.async {
-                    self.isVideoSaved = false
-                    self.recordButton.isEnabled = true
-                    self.flexibleCaptureDelegate?.didCapture(withFileURL: reoutputFileURL)
-                }
-            })
-        
+    private func changeButtonColor(target: UIButton, color: UIColor) {
+        target.backgroundColor = color
     }
     
     private func cropMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, croppingRect: CGRect, complition: @escaping () -> Void) {
