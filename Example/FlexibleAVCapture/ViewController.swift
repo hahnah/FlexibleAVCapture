@@ -11,7 +11,7 @@ import Photos
 
 class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate {
     
-    let vc: FlexibleAVCaptureViewController = FlexibleAVCaptureViewController()
+    let flexibleAVCaptureVC: FlexibleAVCaptureViewController = FlexibleAVCaptureViewController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,8 +30,8 @@ class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate 
     }
     
     func showFlexibleAVCaptureView() {
-        vc.flexibleCaptureDelegate = self
-        self.present(vc, animated: true, completion: nil)
+        flexibleAVCaptureVC.flexibleCaptureDelegate = self
+        self.present(flexibleAVCaptureVC, animated: true, completion: nil)
     }
     
     func didCapture(withFileURL fileURL: URL) {
@@ -44,7 +44,7 @@ class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate 
                 let message = success ? "Movie saved." : "Failed to save movie."
                 let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
-                self.vc.present(alert, animated: true, completion: nil)
+                self.flexibleAVCaptureVC.present(alert, animated: true, completion: nil)
             }
         }
     }
