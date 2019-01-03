@@ -2,7 +2,7 @@
 //  Helper.swift
 //  FlexibleAVCapture
 //
-//  Copyright 2019, hahnah
+//  Copyright (c) 2019 hahnah. All rights reserved.
 //
 
 import Foundation
@@ -63,12 +63,11 @@ extension FlexibleAVCaptureViewController {
         let assetExport = AVAssetExportSession.init(asset: mixComposition, presetName: AVAssetExportPresetMediumQuality)
         assetExport?.outputFileType = fileType
         assetExport?.outputURL = destinationURL
-        // assetExport?.shouldOptimizeForNetworkUse = true
         if let videoComposition = croppedVideoComposition {
             assetExport?.videoComposition = videoComposition
         }
         
-        // エクスポート先URLに既にファイルが存在していれば、削除する (上書きはできないので)
+        // delete if already exist
         if FileManager.default.fileExists(atPath: (assetExport?.outputURL?.path)!) {
             try! FileManager.default.removeItem(atPath: (assetExport?.outputURL?.path)!)
         }
@@ -130,7 +129,6 @@ extension FlexibleAVCaptureViewController {
             let scaledWidth: CGFloat = originalSize.width * scale
             let scaledProtrudedWidth: CGFloat = scaledWidth - boundingSize.width
             protrudedSize.halfOfWidth = scaledProtrudedWidth * 0.5 / scale
-            //protrudedSize.halfOfWidth = (originalSize.width - originalSize.height / boundingAspectRatio) * 0.5
             protrudedSize.halfOfHeight = 0.0
         } else if movieAspectRatio > boundingAspectRatio { // e.g. iPad series
             protrudedSize.halfOfWidth = 0.0

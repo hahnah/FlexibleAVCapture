@@ -2,7 +2,7 @@
 //  FlexibleAVCaptureViewControllerDelegate.swift
 //  FlexibleAVCapture
 //
-//  Copyright 2019, hahnah
+//  Copyright (c) 2019 hahnah. All rights reserved.
 //
 
 import Foundation

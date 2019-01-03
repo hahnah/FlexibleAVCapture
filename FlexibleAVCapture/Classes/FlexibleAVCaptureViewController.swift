@@ -2,7 +2,7 @@
 //  FlexibleAVCaptureViewController.swift
 //  FlexibleAVCapture
 //
-//  Copyright 2019, hahnah
+//  Copyright (c) 2019 hahnah. All rights reserved.
 //
 
 import UIKit
@@ -56,11 +56,11 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         self.captureSession = AVCaptureSession()
         
-        // video inputを capture sessionに追加
+        // add video input to a capture session
         let videoInput = try! AVCaptureDeviceInput(device: videoDevice!)
         self.captureSession?.addInput(videoInput)
         
-        // audio inputを capture sessionに追加
+        // add audio input to a capture session
         let audioInput = try! AVCaptureDeviceInput(device: audioDevice!)
         self.captureSession?.addInput(audioInput)
         
