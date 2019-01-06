@@ -20,6 +20,7 @@ class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.showFlexibleAVCaptureView()
+        self.flexibleAVCaptureVC.forceResize(withResizingParameter: 0.2)
     }
 
     override func didReceiveMemoryWarning() {

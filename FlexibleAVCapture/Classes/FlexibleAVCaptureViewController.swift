@@ -42,6 +42,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         super.viewWillDisappear(animated)
     }
     
+    public func forceResize(withResizingParameter resizingParameter: Float) {
+        self.forcePreviewFrameToResize(resizingParameter: resizingParameter)
+    }
+    
     public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         
         let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
