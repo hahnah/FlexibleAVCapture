@@ -27,7 +27,7 @@ class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate 
     }
     
     func showFlexibleAVCaptureView() {
-        flexibleAVCaptureVC.flexibleCaptureDelegate = self
+        self.flexibleAVCaptureVC.flexibleCaptureDelegate = self
         self.present(flexibleAVCaptureVC, animated: true, completion: nil)
     }
     
