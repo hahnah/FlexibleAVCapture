@@ -43,7 +43,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     public func forceResize(withResizingParameter resizingParameter: Float) {
-        self.forcePreviewFrameToResize(resizingParameter: resizingParameter)
+        self.forcePreviewFrameToResize(withResizingParameter: resizingParameter)
     }
     
     public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
@@ -157,23 +157,23 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     @objc private func onSliderChanged(sender: UISlider) {
-        self.videoLayer?.frame = createResizedPreviewFrame(resizingParameter: slider.value)
+        self.videoLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
     }
     
     @objc private func onClickButtonForWideFrame(sender: UIButton) {
-        self.forcePreviewFrameToResize(resizingParameter: self.boundaries[0])
+        self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[0])
     }
     
     @objc private func onClickButtonForSquareFrame(sender: UIButton) {
-        self.forcePreviewFrameToResize(resizingParameter: self.boundaries[1])
+        self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[1])
     }
     
     @objc private func onClickButtonForFullFrame(sender: UIButton) {
-        self.forcePreviewFrameToResize(resizingParameter: self.boundaries[2])
+        self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[2])
     }
     
     @objc private func onClickButtonForTallFrame(sender: UIButton) {
-        self.forcePreviewFrameToResize(resizingParameter: self.boundaries[3])
+        self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[3])
     }
     
     @objc private func onClickRecordButton(sender: UIButton) {
@@ -225,10 +225,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         let boundaryForFullFrame: Float = self.boundaries[2]
         userDefaults.register(defaults: ["sliderValueForCameraFrame": boundaryForFullFrame])
         let presetSliderValue: Float = userDefaults.object(forKey: "sliderValueForCameraFrame") as! Float
-        self.forcePreviewFrameToResize(resizingParameter: presetSliderValue)
+        self.forcePreviewFrameToResize(withResizingParameter: presetSliderValue)
     }
     
-    private func createResizedPreviewFrame(resizingParameter: Float) -> CGRect {
+    private func createResizedPreviewFrame(withResizingParameter resizingParameter: Float) -> CGRect {
         guard self.boundaries[0] <= resizingParameter && resizingParameter <= self.boundaries[self.boundaries.count - 1] else {
             return self.view.bounds
         }
@@ -271,9 +271,9 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         return resultRect
     }
     
-    private func forcePreviewFrameToResize(resizingParameter: Float) {
+    private func forcePreviewFrameToResize(withResizingParameter resizingParameter: Float) {
         self.slider.value = resizingParameter
-        self.videoLayer?.frame = createResizedPreviewFrame(resizingParameter: self.slider.value)
+        self.videoLayer?.frame = createResizedPreviewFrame(withResizingParameter: self.slider.value)
     }
     
     private func changeButtonColor(target: UIButton, color: UIColor) {
