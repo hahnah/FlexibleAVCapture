@@ -36,7 +36,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var buttonForSquareFrame: UIButton = UIButton()
     private var buttonForWideFrame: UIButton = UIButton()
     private var buttonForTallFrame: UIButton = UIButton()
-    private var buttonForFullFrame2: UIButton = UIButton()
     private var recordButton: UIButton!
     private var isRecording: Bool = false
     private var isVideoSaved: Bool = false
@@ -203,7 +202,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             self.buttonForSquareFrame.isEnabled = false
             self.buttonForWideFrame.isEnabled = false
             self.buttonForTallFrame.isEnabled = false
-            self.buttonForFullFrame2.isEnabled = false
             self.isRecording = true
             
             self.changeButtonColor(target: self.recordButton, color: UIColor.red)
@@ -217,7 +215,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             self.buttonForSquareFrame.isEnabled = true
             self.buttonForWideFrame.isEnabled = true
             self.buttonForTallFrame.isEnabled = true
-            self.buttonForFullFrame2.isEnabled = true
             self.slider.isEnabled = true
             self.changeButtonColor(target: self.recordButton, color: UIColor.gray)
             self.recordButton.setTitle("Record", for: .normal)
