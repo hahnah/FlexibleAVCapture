@@ -14,7 +14,21 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
     public var maxDuration: Int64 = 60
     public var minimumFrameRatio: CGFloat = 0.34
+    public var allowResizing: Bool {
+        get {
+            return self.allowResizing_
+        }
+        set(ifAllow) {
+            self.allowResizing_ = ifAllow
+            if ifAllow {
+                self.showResizingUIs()
+            } else {
+                self.hideResizingUIs()
+            }
+        }
+    }
     
+    private var allowResizing_: Bool = true
     private var captureSession: AVCaptureSession? = nil
     private var videoLayer: AVCaptureVideoPreviewLayer? = nil
     private var slider: UISlider = UISlider()
@@ -286,6 +300,22 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     private func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImage.Orientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
         return self.calculateCroppingRect(movieSize: originalMovieSize, movieOrientation: orientation ,previewFrameRect: previewFrameRect, fullFrameRect: fullFrameRect)
+    }
+    
+    private func showResizingUIs() {
+        self.slider.isHidden = false
+        self.buttonForFullFrame1.isHidden = false
+        self.buttonForSquareFrame.isHidden = false
+        self.buttonForWideFrame.isHidden = false
+        self.buttonForTallFrame.isHidden = false
+    }
+    
+    private func hideResizingUIs() {
+        self.slider.isHidden = true
+        self.buttonForFullFrame1.isHidden = true
+        self.buttonForSquareFrame.isHidden = true
+        self.buttonForWideFrame.isHidden = true
+        self.buttonForTallFrame.isHidden = true
     }
     
 }
