@@ -32,7 +32,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var captureSession: AVCaptureSession? = nil
     private var videoLayer: AVCaptureVideoPreviewLayer? = nil
     private var slider: UISlider = UISlider()
-    private var buttonForFullFrame1: UIButton = UIButton()
+    private var buttonForFullFrame: UIButton = UIButton()
     private var buttonForSquareFrame: UIButton = UIButton()
     private var buttonForWideFrame: UIButton = UIButton()
     private var buttonForTallFrame: UIButton = UIButton()
@@ -140,13 +140,13 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.buttonForSquareFrame)
         
         // button on slider for full frame
-        self.buttonForFullFrame1.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
-        self.buttonForFullFrame1.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[2]), y: self.slider.center.y - 40)
-        self.buttonForFullFrame1.setTitle("Full", for: .normal)
-        self.buttonForFullFrame1.setTitleColor(UIColor.white, for: .normal)
-        self.buttonForFullFrame1.setTitleColor(UIColor.lightGray, for: .disabled)
-        self.buttonForFullFrame1.addTarget(self, action: #selector(self.onClickButtonForFullFrame(sender:)), for: .touchUpInside)
-        self.view.addSubview(self.buttonForFullFrame1)
+        self.buttonForFullFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
+        self.buttonForFullFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[2]), y: self.slider.center.y - 40)
+        self.buttonForFullFrame.setTitle("Full", for: .normal)
+        self.buttonForFullFrame.setTitleColor(UIColor.white, for: .normal)
+        self.buttonForFullFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        self.buttonForFullFrame.addTarget(self, action: #selector(self.onClickButtonForFullFrame(sender:)), for: .touchUpInside)
+        self.view.addSubview(self.buttonForFullFrame)
         
         // button on slider for tall frame
         self.buttonForTallFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
@@ -198,7 +198,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             
             self.slider.isEnabled = false
-            self.buttonForFullFrame1.isEnabled = false
+            self.buttonForFullFrame.isEnabled = false
             self.buttonForSquareFrame.isEnabled = false
             self.buttonForWideFrame.isEnabled = false
             self.buttonForTallFrame.isEnabled = false
@@ -211,7 +211,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as! AVCaptureMovieFileOutput
             captureOutput.stopRecording()
             self.isRecording = false
-            self.buttonForFullFrame1.isEnabled = true
+            self.buttonForFullFrame.isEnabled = true
             self.buttonForSquareFrame.isEnabled = true
             self.buttonForWideFrame.isEnabled = true
             self.buttonForTallFrame.isEnabled = true
@@ -301,7 +301,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     private func showResizingUIs() {
         self.slider.isHidden = false
-        self.buttonForFullFrame1.isHidden = false
+        self.buttonForFullFrame.isHidden = false
         self.buttonForSquareFrame.isHidden = false
         self.buttonForWideFrame.isHidden = false
         self.buttonForTallFrame.isHidden = false
@@ -309,7 +309,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     private func hideResizingUIs() {
         self.slider.isHidden = true
-        self.buttonForFullFrame1.isHidden = true
+        self.buttonForFullFrame.isHidden = true
         self.buttonForSquareFrame.isHidden = true
         self.buttonForWideFrame.isHidden = true
         self.buttonForTallFrame.isHidden = true
