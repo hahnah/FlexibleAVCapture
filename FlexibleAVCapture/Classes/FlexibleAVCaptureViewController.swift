@@ -12,6 +12,8 @@ import Photos
 public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
+    public var maxDuration: Int64 = 60
+    public var minimumFrameRatio: CGFloat = 0.34
     
     private var captureSession: AVCaptureSession? = nil
     private var videoLayer: AVCaptureVideoPreviewLayer? = nil
@@ -78,9 +80,9 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         let audioInput = try! AVCaptureDeviceInput(device: audioDevice!)
         self.captureSession?.addInput(audioInput)
         
-        // max 60sec
+        // add capture output
         let captureOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
-        captureOutput.maxRecordedDuration = CMTimeMake(value: 60, timescale: 1)
+        captureOutput.maxRecordedDuration = CMTimeMake(value: self.maxDuration, timescale: 1)
         self.captureSession?.addOutput(captureOutput)
         
         // preview layer
@@ -229,8 +231,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         let maximumWidth: CGFloat = self.view.bounds.width
         let maximumHeight: CGFloat = self.view.bounds.height
-        let minimumWidth: CGFloat = maximumHeight * 0.34
-        let minimumHeight: CGFloat = maximumWidth * 0.34
+        let minimumWidth: CGFloat = maximumHeight * self.minimumFrameRatio
+        let minimumHeight: CGFloat = maximumWidth * self.minimumFrameRatio
         let squareWidth: CGFloat = maximumWidth
         let squareHeight: CGFloat = maximumWidth
         
