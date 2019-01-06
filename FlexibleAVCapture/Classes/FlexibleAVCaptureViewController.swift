@@ -13,7 +13,18 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
     public var maxDuration: Int64 = 60
-    public var minimumFrameRatio: CGFloat = 0.34
+    public var minimumFrameRatio: CGFloat {
+        get {
+            return self.minimumFrameRatio_
+        }
+        set(newRatio) {
+            guard 0.0 <= newRatio && newRatio <= 1.0 else {
+                debugPrint("Failed to set minimumFrameRatio. It should fulfill the condition 0 ≦ minimumFrameRatio ≦ 1.")
+                return
+            }
+            self.minimumFrameRatio_ = newRatio
+        }
+    }
     public var allowResizing: Bool {
         get {
             return self.allowResizing_
@@ -28,6 +39,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }
     }
     
+    private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
     private var captureSession: AVCaptureSession? = nil
     private var videoLayer: AVCaptureVideoPreviewLayer? = nil
@@ -56,6 +68,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     public func forceResize(withResizingParameter resizingParameter: Float) {
+        guard 0 <= resizingParameter && resizingParameter <= 1.0 else {
+            debugPrint("Illegal parameter in forceResize. withResizingParameter should fulill the condition 0 ≦ withResizingParameter ≦ 1.")
+            return
+        }
         self.forcePreviewFrameToResize(withResizingParameter: resizingParameter)
     }
     
@@ -246,8 +262,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         let maximumWidth: CGFloat = self.view.bounds.width
         let maximumHeight: CGFloat = self.view.bounds.height
-        let minimumWidth: CGFloat = maximumHeight * self.minimumFrameRatio
-        let minimumHeight: CGFloat = maximumWidth * self.minimumFrameRatio
+        let minimumWidth: CGFloat = maximumHeight * self.minimumFrameRatio_
+        let minimumHeight: CGFloat = maximumWidth * self.minimumFrameRatio_
         let squareWidth: CGFloat = maximumWidth
         let squareHeight: CGFloat = maximumWidth
         
