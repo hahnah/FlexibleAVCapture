@@ -13,6 +13,14 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
     public var maxDuration: Int64 = 60
+    public var cameraPosition: AVCaptureDevice.Position {
+        get {
+            return self.cameraPosition_
+        }
+        set(position) {
+            self.cameraPosition_ = position
+        }
+    }
     public var minimumFrameRatio: CGFloat {
         get {
             return self.minimumFrameRatio_
@@ -39,6 +47,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }
     }
     
+    private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
     private var captureSession: AVCaptureSession? = nil
@@ -100,7 +109,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     private func showCameraPreview() {
-        let videoDevice = AVCaptureDevice.default(for: AVMediaType.video)
+        let videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: self.cameraPosition)
         let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
         
         self.captureSession = AVCaptureSession()
