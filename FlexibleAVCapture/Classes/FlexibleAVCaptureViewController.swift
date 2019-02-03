@@ -21,6 +21,19 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             self.cameraPosition_ = position
         }
     }
+    public var videoQuality: AVCaptureSession.Preset {
+        get {
+            return self.videoQuality_
+        }
+        set(quality) {
+            self.captureSession?.beginConfiguration()
+            if self.captureSession?.canSetSessionPreset(quality) ?? false {
+                self.videoQuality_ = quality
+                self.captureSession?.sessionPreset = quality
+            }
+            self.captureSession?.commitConfiguration()
+        }
+    }
     public var minimumFrameRatio: CGFloat {
         get {
             return self.minimumFrameRatio_
@@ -50,11 +63,12 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
-    private var baseZoomFanctor: CGFloat = 1.0
+    private var videoQuality_: AVCaptureSession.Preset = .medium
     
     private var captureSession: AVCaptureSession? = nil
     private var videoDevice: AVCaptureDevice?
     
+    private var baseZoomFanctor: CGFloat = 1.0
     private var videoLayer: AVCaptureVideoPreviewLayer? = nil
     private var slider: UISlider = UISlider()
     private var buttonForFullFrame: UIButton = UIButton()
