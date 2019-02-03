@@ -258,31 +258,16 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
             captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             
-            self.slider.isEnabled = false
-            self.buttonForFullFrame.isEnabled = false
-            self.buttonForSquareFrame.isEnabled = false
-            self.buttonForWideFrame.isEnabled = false
-            self.buttonForTallFrame.isEnabled = false
-            
-            self.changeButtonColor(target: self.recordButton, color: UIColor.red)
-            self.recordButton.setTitle("●Recording", for: .normal)
+            self.disableResizingUIs()
+            self.updateRecordButton(enableStartRecording: false)
         } else {
             // stop recording
             captureOutput.stopRecording()
             
-            self.buttonForFullFrame.isEnabled = true
-            self.buttonForSquareFrame.isEnabled = true
-            self.buttonForWideFrame.isEnabled = true
-            self.buttonForTallFrame.isEnabled = true
-            self.slider.isEnabled = true
-            self.changeButtonColor(target: self.recordButton, color: UIColor.gray)
-            self.recordButton.setTitle("Record", for: .normal)
-            self.recordButton.isEnabled = false
+            self.enableResizingUIs()
+            self.updateRecordButton(enableStartRecording: true)
             
-            // update preset slider value
-            let userDefaults: UserDefaults = UserDefaults.standard
-            userDefaults.set(self.slider.value, forKey: "sliderValueForCameraFrame")
-            userDefaults.synchronize()
+            self.saveSliderValue()
         }
     }
     
@@ -356,6 +341,39 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     private func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImage.Orientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
         return self.calculateCroppingRect(movieSize: originalMovieSize, movieOrientation: orientation ,previewFrameRect: previewFrameRect, fullFrameRect: fullFrameRect)
+    }
+    
+    private func enableResizingUIs() {
+        self.buttonForFullFrame.isEnabled = true
+        self.buttonForSquareFrame.isEnabled = true
+        self.buttonForWideFrame.isEnabled = true
+        self.buttonForTallFrame.isEnabled = true
+        self.slider.isEnabled = true
+    }
+    
+    private func disableResizingUIs() {
+        self.slider.isEnabled = false
+        self.buttonForFullFrame.isEnabled = false
+        self.buttonForSquareFrame.isEnabled = false
+        self.buttonForWideFrame.isEnabled = false
+        self.buttonForTallFrame.isEnabled = false
+    }
+    
+    private func updateRecordButton(enableStartRecording: Bool) {
+        if enableStartRecording {
+            self.changeButtonColor(target: self.recordButton, color: UIColor.gray)
+            self.recordButton.setTitle("Record", for: .normal)
+            self.recordButton.isEnabled = false
+        } else {
+            self.changeButtonColor(target: self.recordButton, color: UIColor.red)
+            self.recordButton.setTitle("●Recording", for: .normal)
+        }
+    }
+    
+    private func saveSliderValue() {
+        let userDefaults: UserDefaults = UserDefaults.standard
+        userDefaults.set(self.slider.value, forKey: "sliderValueForCameraFrame")
+        userDefaults.synchronize()
     }
     
     private func showResizingUIs() {
