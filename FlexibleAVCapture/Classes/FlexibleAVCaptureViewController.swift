@@ -50,6 +50,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
+    private var baseZoomFanctor: CGFloat = 1.0
     private var captureSession: AVCaptureSession? = nil
     private var videoLayer: AVCaptureVideoPreviewLayer? = nil
     private var slider: UISlider = UISlider()
@@ -65,11 +66,14 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
                                     2.0 / 3.0,
                                     1.0]
     
+    private var videoDevice: AVCaptureDevice?
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.black
         self.showCameraPreview()
         self.applyPresetPreviewFrame()
+        self.setUpPinchGestureRecognizer()
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -109,7 +113,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     private func showCameraPreview() {
-        let videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: self.cameraPosition)
+        videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: self.cameraPosition)
         let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
         
         self.captureSession = AVCaptureSession()
@@ -194,6 +198,12 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
     }
     
+    private func setUpPinchGestureRecognizer() {
+        // pinch recognizer for zooming
+        let pinchGestureRecognizer: UIPinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(self.onPinchGesture(_:)))
+        self.view.addGestureRecognizer(pinchGestureRecognizer)
+    }
+    
     @objc private func onSliderChanged(sender: UISlider) {
         self.videoLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
     }
@@ -212,6 +222,30 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     @objc private func onClickButtonForTallFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[3])
+    }
+    
+    @objc private func onPinchGesture(_ sender: UIPinchGestureRecognizer) {
+        if sender.state == .began {
+            self.baseZoomFanctor = (self.videoDevice?.videoZoomFactor)!
+        }
+        
+        let tempZoomFactor: CGFloat = self.baseZoomFanctor * sender.scale
+        let newZoomFactdor: CGFloat
+        if tempZoomFactor < (videoDevice?.minAvailableVideoZoomFactor)! {
+            newZoomFactdor = (videoDevice?.minAvailableVideoZoomFactor)!
+        } else if (videoDevice?.maxAvailableVideoZoomFactor)! < tempZoomFactor {
+            newZoomFactdor = (videoDevice?.maxAvailableVideoZoomFactor)!
+        } else {
+            newZoomFactdor = tempZoomFactor
+        }
+        
+        do {
+            try self.videoDevice?.lockForConfiguration()
+            self.videoDevice?.ramp(toVideoZoomFactor: newZoomFactdor, withRate: 32.0)
+            videoDevice?.unlockForConfiguration()
+        } catch {
+            print("Failed to change zoom factor.")
+        }
     }
     
     @objc private func onClickRecordButton(sender: UIButton) {
