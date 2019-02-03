@@ -73,7 +73,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.backgroundColor = UIColor.black
         self.showCameraPreview()
         self.applyPresetPreviewFrame()
-        self.setUpPinchGestureRecognizer()
+        self.setupPinchGestureRecognizer()
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -198,7 +198,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
     }
     
-    private func setUpPinchGestureRecognizer() {
+    private func setupPinchGestureRecognizer() {
         // pinch recognizer for zooming
         let pinchGestureRecognizer: UIPinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(self.onPinchGesture(_:)))
         self.view.addGestureRecognizer(pinchGestureRecognizer)
