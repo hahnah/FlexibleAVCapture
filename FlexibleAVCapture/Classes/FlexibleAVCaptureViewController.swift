@@ -262,7 +262,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             return
         }
         
-        if !captureOutput.isRecording {
+        if captureOutput.isRecording {
+            // stop recording
+            captureOutput.stopRecording()
+        } else {
             // start recording
             let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
@@ -270,9 +273,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             
             self.updateRecordButton(enableStartRecording: false)
             self.disableResizingUIs()
-        } else {
-            // stop recording
-            captureOutput.stopRecording()
         }
     }
     
