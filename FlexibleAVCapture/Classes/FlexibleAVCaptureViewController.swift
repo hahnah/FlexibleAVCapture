@@ -51,7 +51,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
     private var baseZoomFanctor: CGFloat = 1.0
+    
     private var captureSession: AVCaptureSession? = nil
+    private var videoDevice: AVCaptureDevice?
+    
     private var videoLayer: AVCaptureVideoPreviewLayer? = nil
     private var slider: UISlider = UISlider()
     private var buttonForFullFrame: UIButton = UIButton()
@@ -65,10 +68,12 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
                                     2.0 / 3.0,
                                     1.0]
     
-    private var videoDevice: AVCaptureDevice?
     
     override public func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override public func viewWillAppear(_ animated: Bool) {
         self.view.backgroundColor = UIColor.black
         self.showCameraPreview()
         self.applyPresetPreviewFrame()
@@ -77,6 +82,16 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+    }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        self.captureSession?.stopRunning()
+        self.captureSession?.inputs.forEach { input in
+            self.captureSession?.removeInput(input)
+        }
+        self.captureSession?.outputs.forEach { output in
+            self.captureSession?.removeOutput(output)
+        }
     }
     
     public func forceResize(withResizingParameter resizingParameter: Float) {
