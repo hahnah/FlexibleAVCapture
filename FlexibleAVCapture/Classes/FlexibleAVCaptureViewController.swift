@@ -87,6 +87,13 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.forcePreviewFrameToResize(withResizingParameter: resizingParameter)
     }
     
+    public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
+        /* NOTE: For better response of "Record" button's changing to "●Recording", do not call these two functions here:
+         *         - self.updateRecordButton(enableStartRecording: false)
+         *         - self.disableResizingUIs()
+         */
+    }
+    
     public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         
         let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -104,7 +111,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             complition: {
                 DispatchQueue.main.async {
                     self.isVideoSaved = false
+                    self.updateRecordButton(enableStartRecording: true)
                     self.recordButton.isEnabled = true
+                    self.enableResizingUIs()
+                    self.saveSliderValue()
                     self.flexibleCaptureDelegate?.didCapture(withFileURL: reoutputFileURL)
                 }
         })
@@ -258,16 +268,11 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
             captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             
-            self.disableResizingUIs()
             self.updateRecordButton(enableStartRecording: false)
+            self.disableResizingUIs()
         } else {
             // stop recording
             captureOutput.stopRecording()
-            
-            self.enableResizingUIs()
-            self.updateRecordButton(enableStartRecording: true)
-            
-            self.saveSliderValue()
         }
     }
     
@@ -363,7 +368,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         if enableStartRecording {
             self.changeButtonColor(target: self.recordButton, color: UIColor.gray)
             self.recordButton.setTitle("Record", for: .normal)
-            self.recordButton.isEnabled = false
+            self.recordButton.isEnabled = false // to prevent restarting recording until fileoutput finish
         } else {
             self.changeButtonColor(target: self.recordButton, color: UIColor.red)
             self.recordButton.setTitle("●Recording", for: .normal)
