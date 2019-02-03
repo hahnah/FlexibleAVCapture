@@ -59,7 +59,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var buttonForWideFrame: UIButton = UIButton()
     private var buttonForTallFrame: UIButton = UIButton()
     private var recordButton: UIButton!
-    private var isRecording: Bool = false
     private var isVideoSaved: Bool = false
     private let boundaries: Array<Float> = [0.0,
                                     1.0 / 3.0,
@@ -249,11 +248,14 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     @objc private func onClickRecordButton(sender: UIButton) {
-        if !isRecording {
+        guard let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else {
+            return
+        }
+        
+        if !captureOutput.isRecording {
             // start recording
             let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
-            let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as! AVCaptureMovieFileOutput
             captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             
             self.slider.isEnabled = false
@@ -261,15 +263,13 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             self.buttonForSquareFrame.isEnabled = false
             self.buttonForWideFrame.isEnabled = false
             self.buttonForTallFrame.isEnabled = false
-            self.isRecording = true
             
             self.changeButtonColor(target: self.recordButton, color: UIColor.red)
             self.recordButton.setTitle("●Recording", for: .normal)
         } else {
             // stop recording
-            let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as! AVCaptureMovieFileOutput
             captureOutput.stopRecording()
-            self.isRecording = false
+            
             self.buttonForFullFrame.isEnabled = true
             self.buttonForSquareFrame.isEnabled = true
             self.buttonForWideFrame.isEnabled = true
