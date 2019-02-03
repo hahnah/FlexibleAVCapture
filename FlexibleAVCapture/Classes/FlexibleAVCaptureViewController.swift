@@ -113,13 +113,13 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     private func showCameraPreview() {
-        videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: self.cameraPosition)
+        self.videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: self.cameraPosition)
         let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
         
         self.captureSession = AVCaptureSession()
         
         // add video input to a capture session
-        let videoInput = try! AVCaptureDeviceInput(device: videoDevice!)
+        let videoInput = try! AVCaptureDeviceInput(device: self.videoDevice!)
         self.captureSession?.addInput(videoInput)
         
         // add audio input to a capture session
@@ -231,10 +231,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         let tempZoomFactor: CGFloat = self.baseZoomFanctor * sender.scale
         let newZoomFactdor: CGFloat
-        if tempZoomFactor < (videoDevice?.minAvailableVideoZoomFactor)! {
-            newZoomFactdor = (videoDevice?.minAvailableVideoZoomFactor)!
-        } else if (videoDevice?.maxAvailableVideoZoomFactor)! < tempZoomFactor {
-            newZoomFactdor = (videoDevice?.maxAvailableVideoZoomFactor)!
+        if tempZoomFactor < (self.videoDevice?.minAvailableVideoZoomFactor)! {
+            newZoomFactdor = (self.videoDevice?.minAvailableVideoZoomFactor)!
+        } else if (self.videoDevice?.maxAvailableVideoZoomFactor)! < tempZoomFactor {
+            newZoomFactdor = (self.videoDevice?.maxAvailableVideoZoomFactor)!
         } else {
             newZoomFactdor = tempZoomFactor
         }
@@ -242,7 +242,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         do {
             try self.videoDevice?.lockForConfiguration()
             self.videoDevice?.ramp(toVideoZoomFactor: newZoomFactdor, withRate: 32.0)
-            videoDevice?.unlockForConfiguration()
+            self.videoDevice?.unlockForConfiguration()
         } catch {
             print("Failed to change zoom factor.")
         }
