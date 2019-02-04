@@ -92,6 +92,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.showCameraPreview()
         self.applyPresetPreviewFrame()
         self.setupPinchGestureRecognizer()
+        self.setupTapGestureRecognizer()
     }
     
     override public func viewWillDisappear(_ animated: Bool) {
@@ -242,6 +243,12 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addGestureRecognizer(pinchGestureRecognizer)
     }
     
+    private func setupTapGestureRecognizer() {
+        // tap recognizer for focusing
+        let tapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.onTapGesture(_:)))
+        self.view.addGestureRecognizer(tapGestureRecognizer)
+    }
+    
     @objc private func onSliderChanged(sender: UISlider) {
         self.videoLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
     }
@@ -284,6 +291,29 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         } catch {
             print("Failed to change zoom factor.")
         }
+    }
+    
+    @objc private func onTapGesture(_ sender: UITapGestureRecognizer) {
+        let tapCGPoint = sender.location(ofTouch: 0, in: sender.view)
+        let focusView: UIView = UIView()
+        focusView.frame.size = CGSize(width: 120, height: 120)
+        focusView.center = tapCGPoint
+        focusView.backgroundColor = UIColor.white.withAlphaComponent(0)
+        focusView.layer.borderColor = UIColor.white.cgColor
+        focusView.layer.borderWidth = 2
+        focusView.alpha = 1
+        sender.view?.addSubview(focusView)
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            focusView.frame.size = CGSize(width: 80, height: 80)
+            focusView.center = tapCGPoint
+        }, completion: { Void in
+            UIView.animate(withDuration: 0.5, animations: {
+                focusView.alpha = 0
+            })
+        })
+        
+        self.focusWithMode(focusMode: .autoFocus, exposeWithMode: .autoExpose, atDevicePoint: tapCGPoint, motiorSubjectAreaChange: true)
     }
     
     @objc private func onClickRecordButton(sender: UIButton) {
@@ -426,4 +456,24 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForTallFrame.isHidden = true
     }
     
+    private func focusWithMode(focusMode : AVCaptureDevice.FocusMode, exposeWithMode expusureMode :AVCaptureDevice.ExposureMode, atDevicePoint point:CGPoint, motiorSubjectAreaChange monitorSubjectAreaChange:Bool) {
+            let device : AVCaptureDevice = self.videoDevice!
+        do {
+            try device.lockForConfiguration()
+            if(device.isFocusPointOfInterestSupported && device.isFocusModeSupported(focusMode)){
+                device.focusPointOfInterest = point
+                device.focusMode = focusMode
+            }
+            if(device.isExposurePointOfInterestSupported && device.isExposureModeSupported(expusureMode)){
+                device.exposurePointOfInterest = point
+                device.exposureMode = expusureMode
+            }
+            
+            device.isSubjectAreaChangeMonitoringEnabled = monitorSubjectAreaChange
+            device.unlockForConfiguration()
+            
+        } catch let error as NSError {
+            print(error.debugDescription)
+        }
+    }
 }
