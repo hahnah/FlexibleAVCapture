@@ -89,7 +89,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     override public func viewWillAppear(_ animated: Bool) {
         self.view.backgroundColor = UIColor.black
-        self.showCameraPreview()
+        self.setupCamera(withPosition: self.cameraPosition)
         self.applyPresetPreviewFrame()
         self.setupPinchGestureRecognizer()
         self.setupTapGestureRecognizer()
@@ -151,8 +151,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
     }
     
-    private func showCameraPreview() {
-        self.videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: self.cameraPosition)
+    private func setupCamera(withPosition cameraPosition: AVCaptureDevice.Position) {
+        self.videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: cameraPosition)
         let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
         
         self.captureSession = AVCaptureSession()
