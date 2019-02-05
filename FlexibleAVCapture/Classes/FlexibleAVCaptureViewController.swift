@@ -103,7 +103,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         expandingAnimation.toValue = 1
         self.view.layer.add(expandingAnimation, forKey: nil)
         
-        self.setupOperatableUIComponents()
+        self.setupOperatableUIs()
         self.applyPresetPreviewFrame()
     }
     
@@ -139,7 +139,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.backgroundColor = UIColor.black
         self.setupCaptureSession(withPosition: self.cameraPosition)
         self.setupPreviewLayer()
-        self.setupOperatableUIComponents()
+        self.setupOperatableUIs()
         self.applyPresetPreviewFrame()
         self.setupPinchGestureRecognizer()
         self.setupTapGestureRecognizer()
@@ -193,7 +193,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
                     self.isVideoSaved = false
                     self.updateRecordButton(enableStartRecording: true)
                     self.recordButton.isEnabled = true
-                    self.enableResizingUIs()
+                    self.enableOperatableUIs()
                     self.saveSliderValue()
                     self.flexibleCaptureDelegate?.didCapture(withFileURL: reoutputFileURL)
                 }
@@ -231,7 +231,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.layer.addSublayer(self.videoLayer!)
     }
     
-    private func setupOperatableUIComponents() {
+    private func setupOperatableUIs() {
         // slider for adjusting camera preview size
         let sliderWidth: CGFloat = self.view.bounds.width * 0.75
         let sliderHeight: CGFloat = 40
@@ -249,7 +249,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForWideFrame.setTitle("Wide", for: .normal)
         self.buttonForWideFrame.setTitleColor(UIColor.white, for: .normal)
         self.buttonForWideFrame.setTitleColor(UIColor.lightGray, for: .disabled)
-        self.buttonForWideFrame.addTarget(self, action: #selector(self.onClickButtonForWideFrame(sender:)), for: .touchUpInside)
+        self.buttonForWideFrame.addTarget(self, action: #selector(self.onTapButtonForWideFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForWideFrame)
         
         // button on slider for square frame
@@ -258,7 +258,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForSquareFrame.setTitle("Square", for: .normal)
         self.buttonForSquareFrame.setTitleColor(UIColor.white, for: .normal)
         self.buttonForSquareFrame.setTitleColor(UIColor.lightGray, for: .disabled)
-        self.buttonForSquareFrame.addTarget(self, action: #selector(self.onClickButtonForSquareFrame(sender:)), for: .touchUpInside)
+        self.buttonForSquareFrame.addTarget(self, action: #selector(self.onTapButtonForSquareFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForSquareFrame)
         
         // button on slider for full frame
@@ -267,7 +267,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForFullFrame.setTitle("Full", for: .normal)
         self.buttonForFullFrame.setTitleColor(UIColor.white, for: .normal)
         self.buttonForFullFrame.setTitleColor(UIColor.lightGray, for: .disabled)
-        self.buttonForFullFrame.addTarget(self, action: #selector(self.onClickButtonForFullFrame(sender:)), for: .touchUpInside)
+        self.buttonForFullFrame.addTarget(self, action: #selector(self.onTapButtonForFullFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForFullFrame)
         
         // button on slider for tall frame
@@ -276,7 +276,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForTallFrame.setTitle("Tall", for: .normal)
         self.buttonForTallFrame.setTitleColor(UIColor.white, for: .normal)
         self.buttonForTallFrame.setTitleColor(UIColor.lightGray, for: .disabled)
-        self.buttonForTallFrame.addTarget(self, action: #selector(self.onClickButtonForTallFrame(sender:)), for: .touchUpInside)
+        self.buttonForTallFrame.addTarget(self, action: #selector(self.onTapButtonForTallFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForTallFrame)
         
         // record button
@@ -286,7 +286,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.recordButton.setTitle("Record", for: UIControl.State.normal)
         self.recordButton.layer.cornerRadius = 20.0
         self.recordButton.layer.position = CGPoint(x: self.view.bounds.width * 0.5, y:self.view.bounds.height - 70)
-        self.recordButton.addTarget(self, action: #selector(self.onClickRecordButton(sender:)), for: .touchUpInside)
+        self.recordButton.addTarget(self, action: #selector(self.onTapRecordButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.recordButton)
         
         // camera-reversing button
@@ -296,7 +296,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.reverseButton.setTitle("Reverse", for: .normal)
         self.reverseButton.setTitleColor(UIColor.white, for: .normal)
         self.reverseButton.setTitleColor(UIColor.lightGray, for: .disabled)
-        self.reverseButton.addTarget(self, action: #selector(self.onClickReverseButton(sender:)), for: .touchUpInside)
+        self.reverseButton.addTarget(self, action: #selector(self.onTapReverseButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.reverseButton)
     }
     
@@ -316,19 +316,19 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.videoLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
     }
     
-    @objc private func onClickButtonForWideFrame(sender: UIButton) {
+    @objc private func onTapButtonForWideFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[0])
     }
     
-    @objc private func onClickButtonForSquareFrame(sender: UIButton) {
+    @objc private func onTapButtonForSquareFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[1])
     }
     
-    @objc private func onClickButtonForFullFrame(sender: UIButton) {
+    @objc private func onTapButtonForFullFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[2])
     }
     
-    @objc private func onClickButtonForTallFrame(sender: UIButton) {
+    @objc private func onTapButtonForTallFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[3])
     }
     
@@ -381,7 +381,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.focusWithMode(focusMode: .autoFocus, exposeWithMode: .autoExpose, atDevicePoint: tapCGPoint, motiorSubjectAreaChange: true)
     }
     
-    @objc private func onClickRecordButton(sender: UIButton) {
+    @objc private func onTapRecordButton(sender: UIButton) {
         guard let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else {
             return
         }
@@ -396,11 +396,11 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             
             self.updateRecordButton(enableStartRecording: false)
-            self.disableResizingUIs()
+            self.disableOperatableUIs()
         }
     }
     
-    @objc private func onClickReverseButton(sender: UIButton) {
+    @objc private func onTapReverseButton(sender: UIButton) {
         self.reverseCameraPosition()
     }
     
@@ -476,7 +476,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         return self.calculateCroppingRect(movieSize: originalMovieSize, movieOrientation: orientation ,previewFrameRect: previewFrameRect, fullFrameRect: fullFrameRect)
     }
     
-    private func enableResizingUIs() {
+    private func enableOperatableUIs() {
         self.buttonForFullFrame.isEnabled = true
         self.buttonForSquareFrame.isEnabled = true
         self.buttonForWideFrame.isEnabled = true
@@ -485,7 +485,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.reverseButton.isEnabled = true
     }
     
-    private func disableResizingUIs() {
+    private func disableOperatableUIs() {
         self.slider.isEnabled = false
         self.buttonForFullFrame.isEnabled = false
         self.buttonForSquareFrame.isEnabled = false
