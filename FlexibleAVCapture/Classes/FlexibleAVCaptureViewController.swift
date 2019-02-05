@@ -81,6 +81,12 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         self.cameraPosition = self.cameraPosition == .front ? .back : .front
         self.setupCaptureSession(withPosition: self.cameraPosition)
+        
+        // the 1st half fo y-axis rotation
+        let compressingAnimation = CABasicAnimation(keyPath: "transform.scale.x")
+        compressingAnimation.fromValue = 1
+        compressingAnimation.toValue = 0
+        self.view.layer.add(compressingAnimation, forKey: nil)
 
         // change camera preview
         let newVideoLayer: AVCaptureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession!)
@@ -88,6 +94,12 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         newVideoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         self.view.layer.replaceSublayer(self.videoLayer!, with: newVideoLayer)
         self.videoLayer = newVideoLayer
+        
+        // the 2nd half of y-axis rotation
+        let expandingAnimation = CABasicAnimation(keyPath: "transform.scale.x")
+        expandingAnimation.fromValue = 0
+        expandingAnimation.toValue = 1
+        self.view.layer.add(expandingAnimation, forKey: nil)
         
         self.setupOperatableUIComponents()
     }
