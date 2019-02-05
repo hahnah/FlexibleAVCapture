@@ -60,6 +60,38 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }
     }
     
+    public func reverseCameraPosition() {
+        guard let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else {
+            return
+        }
+        guard !captureOutput.isRecording else {
+            return
+        }
+
+        self.captureSession?.stopRunning()
+        self.captureSession?.inputs.forEach { input in
+            self.captureSession?.removeInput(input)
+        }
+        self.captureSession?.outputs.forEach { output in
+            self.captureSession?.removeOutput(output)
+        }
+        self.view.subviews.forEach { subview in
+            subview.removeFromSuperview()
+        }
+        
+        self.cameraPosition = self.cameraPosition == .front ? .back : .front
+        self.setupCaptureSession(withPosition: self.cameraPosition)
+
+        // change camera preview
+        let newVideoLayer: AVCaptureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession!)
+        newVideoLayer.frame = self.getPresetPreviewFrame()
+        newVideoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        self.view.layer.replaceSublayer(self.videoLayer!, with: newVideoLayer)
+        self.videoLayer = newVideoLayer
+        
+        self.setupOperatableUIComponents()
+    }
+    
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
@@ -76,6 +108,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var buttonForWideFrame: UIButton = UIButton()
     private var buttonForTallFrame: UIButton = UIButton()
     private var recordButton: UIButton!
+    private var reverseButton: UIButton = UIButton()
     private var isVideoSaved: Bool = false
     private let boundaries: Array<Float> = [0.0,
                                     1.0 / 3.0,
@@ -89,7 +122,9 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     override public func viewWillAppear(_ animated: Bool) {
         self.view.backgroundColor = UIColor.black
-        self.setupCamera(withPosition: self.cameraPosition)
+        self.setupCaptureSession(withPosition: self.cameraPosition)
+        self.setupPreviewLayer()
+        self.setupOperatableUIComponents()
         self.applyPresetPreviewFrame()
         self.setupPinchGestureRecognizer()
         self.setupTapGestureRecognizer()
@@ -151,7 +186,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
     }
     
-    private func setupCamera(withPosition cameraPosition: AVCaptureDevice.Position) {
+    private func setupCaptureSession(withPosition cameraPosition: AVCaptureDevice.Position) {
         self.videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: cameraPosition)
         let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
         
@@ -170,14 +205,18 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         captureOutput.maxRecordedDuration = self.maxDuration
         self.captureSession?.addOutput(captureOutput)
         
+        self.captureSession?.startRunning()
+    }
+    
+    private func setupPreviewLayer() {
         // preview layer
         self.videoLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
         self.videoLayer?.frame = self.getPresetPreviewFrame()
         self.videoLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
         self.view.layer.addSublayer(self.videoLayer!)
-        
-        self.captureSession?.startRunning()
-        
+    }
+    
+    private func setupOperatableUIComponents() {
         // slider for adjusting camera preview size
         let sliderWidth: CGFloat = self.view.bounds.width * 0.75
         let sliderHeight: CGFloat = 40
@@ -235,6 +274,13 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.recordButton.addTarget(self, action: #selector(self.onClickRecordButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.recordButton)
         
+        // camera-reversing button
+        self.reverseButton.frame = CGRect(x: 0, y: 0, width: 80, height: 80)
+        self.reverseButton.center = CGPoint(x: 100, y: 100)
+        self.reverseButton.backgroundColor = UIColor.clear
+        self.reverseButton.setTitle("Reverse", for: .normal)
+        self.reverseButton.addTarget(self, action: #selector(self.onClickReverseButton(sender:)), for: .touchUpInside)
+        self.view.addSubview(self.reverseButton)
     }
     
     private func setupPinchGestureRecognizer() {
@@ -333,6 +379,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             self.updateRecordButton(enableStartRecording: false)
             self.disableResizingUIs()
         }
+    }
+    
+    @objc private func onClickReverseButton(sender: UIButton) {
+        self.reverseCameraPosition()
     }
     
     private func getPresetPreviewFrame() -> CGRect {
