@@ -119,7 +119,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var buttonForSquareFrame: UIButton = UIButton()
     private var buttonForWideFrame: UIButton = UIButton()
     private var buttonForTallFrame: UIButton = UIButton()
-    private var recordButton: UIButton!
+    private var recordButton: UIButton = UIButton()
     private var reverseButton: UIButton = UIButton()
     private var isVideoSaved: Bool = false
     private let boundaries: Array<Float> = [0.0,
@@ -277,7 +277,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.buttonForTallFrame)
         
         // record button
-        self.recordButton = UIButton(frame: CGRect(x: 0,y: 0,width: 140,height: 50))
+        self.recordButton.frame = CGRect(x: 0, y: 0, width: 140, height: 50)
         self.recordButton.backgroundColor = UIColor.gray
         self.recordButton.layer.masksToBounds = true
         self.recordButton.setTitle("Record", for: UIControl.State.normal)
