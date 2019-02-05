@@ -282,7 +282,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.recordButton.layer.masksToBounds = true
         self.recordButton.setTitle("Record", for: UIControl.State.normal)
         self.recordButton.layer.cornerRadius = 20.0
-        self.recordButton.layer.position = CGPoint(x: self.view.bounds.width/2, y:self.view.bounds.height-70)
+        self.recordButton.layer.position = CGPoint(x: self.view.bounds.width * 0.5, y:self.view.bounds.height - 70)
         self.recordButton.addTarget(self, action: #selector(self.onClickRecordButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.recordButton)
         
