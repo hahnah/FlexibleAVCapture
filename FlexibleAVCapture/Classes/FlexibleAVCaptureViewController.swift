@@ -368,6 +368,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }, completion: { Void in
             UIView.animate(withDuration: 0.5, animations: {
                 focusView.alpha = 0
+                }, completion: { Void in
+                    focusView.removeFromSuperview()
             })
         })
         
