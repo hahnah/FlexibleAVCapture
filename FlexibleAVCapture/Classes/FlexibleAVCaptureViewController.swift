@@ -241,7 +241,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.slider)
         
         // button on slider for wide frame
-        self.buttonForWideFrame.frame = CGRect(x: 0, y: 0, width: 45, height: 20)
+        self.buttonForWideFrame.frame = CGRect(x: 0, y: 0, width: 45, height: 30)
         self.buttonForWideFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[0]), y: self.slider.center.y - 40)
         self.buttonForWideFrame.setTitle("Wide", for: .normal)
         self.buttonForWideFrame.setTitleColor(UIColor.white, for: .normal)
@@ -250,7 +250,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.buttonForWideFrame)
         
         // button on slider for square frame
-        self.buttonForSquareFrame.frame = CGRect(x: 0, y: 0, width: 60, height: 20)
+        self.buttonForSquareFrame.frame = CGRect(x: 0, y: 0, width: 60, height: 30)
         self.buttonForSquareFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[1]), y: self.slider.center.y - 40)
         self.buttonForSquareFrame.setTitle("Square", for: .normal)
         self.buttonForSquareFrame.setTitleColor(UIColor.white, for: .normal)
@@ -259,7 +259,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.buttonForSquareFrame)
         
         // button on slider for full frame
-        self.buttonForFullFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
+        self.buttonForFullFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 30)
         self.buttonForFullFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[2]), y: self.slider.center.y - 40)
         self.buttonForFullFrame.setTitle("Full", for: .normal)
         self.buttonForFullFrame.setTitleColor(UIColor.white, for: .normal)
@@ -268,7 +268,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.buttonForFullFrame)
         
         // button on slider for tall frame
-        self.buttonForTallFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 20)
+        self.buttonForTallFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 30)
         self.buttonForTallFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[3]), y: self.slider.center.y - 40)
         self.buttonForTallFrame.setTitle("Tall", for: .normal)
         self.buttonForTallFrame.setTitleColor(UIColor.white, for: .normal)
