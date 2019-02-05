@@ -294,6 +294,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.reverseButton.center = CGPoint(x: self.view.bounds.width - self.reverseButton.frame.width, y: self.view.bounds.height - 70)
         self.reverseButton.backgroundColor = UIColor.clear
         self.reverseButton.setTitle("Reverse", for: .normal)
+        self.reverseButton.setTitleColor(UIColor.white, for: .normal)
+        self.reverseButton.setTitleColor(UIColor.lightGray, for: .disabled)
         self.reverseButton.addTarget(self, action: #selector(self.onClickReverseButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.reverseButton)
     }
@@ -480,6 +482,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForWideFrame.isEnabled = true
         self.buttonForTallFrame.isEnabled = true
         self.slider.isEnabled = true
+        self.reverseButton.isEnabled = true
     }
     
     private func disableResizingUIs() {
@@ -488,6 +491,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForSquareFrame.isEnabled = false
         self.buttonForWideFrame.isEnabled = false
         self.buttonForTallFrame.isEnabled = false
+        self.reverseButton.isEnabled = false
     }
     
     private func updateRecordButton(enableStartRecording: Bool) {
