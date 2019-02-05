@@ -67,6 +67,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         guard !captureOutput.isRecording else {
             return
         }
+        
+        self.saveSliderValue()
 
         self.captureSession?.stopRunning()
         self.captureSession?.inputs.forEach { input in
@@ -102,6 +104,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.layer.add(expandingAnimation, forKey: nil)
         
         self.setupOperatableUIComponents()
+        self.applyPresetPreviewFrame()
     }
     
     private var cameraPosition_: AVCaptureDevice.Position = .back
