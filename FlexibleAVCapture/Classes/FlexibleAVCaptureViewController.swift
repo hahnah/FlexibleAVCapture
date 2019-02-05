@@ -287,8 +287,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.recordButton)
         
         // camera-reversing button
-        self.reverseButton.frame = CGRect(x: 0, y: 0, width: 80, height: 80)
-        self.reverseButton.center = CGPoint(x: 100, y: 100)
+        self.reverseButton.frame = CGRect(x: 0, y: 0, width: 50, height: 40)
+        self.reverseButton.center = CGPoint(x: self.view.bounds.width - self.reverseButton.frame.width, y: self.view.bounds.height - 70)
         self.reverseButton.backgroundColor = UIColor.clear
         self.reverseButton.setTitle("Reverse", for: .normal)
         self.reverseButton.addTarget(self, action: #selector(self.onClickReverseButton(sender:)), for: .touchUpInside)
