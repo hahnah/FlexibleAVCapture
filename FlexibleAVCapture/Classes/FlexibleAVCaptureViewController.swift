@@ -77,34 +77,25 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.captureSession?.outputs.forEach { output in
             self.captureSession?.removeOutput(output)
         }
-        self.view.subviews.forEach { subview in
-            subview.removeFromSuperview()
-        }
         
         self.cameraPosition = self.cameraPosition == .front ? .back : .front
-        self.setupCaptureSession(withPosition: self.cameraPosition)
+        //self.setupCaptureSession(withPosition: self.cameraPosition)
         
-        // the 1st half fo y-axis rotation
-        let compressingAnimation = CABasicAnimation(keyPath: "transform.scale.x")
-        compressingAnimation.fromValue = 1
-        compressingAnimation.toValue = 0
-        self.view.layer.add(compressingAnimation, forKey: nil)
-
-        // change camera preview
+        // prepare new capture session preview with opposite camera
+        let newCameraPosition: AVCaptureDevice.Position = self.videoDevice?.position == .front ? .back : .front
+        self.setupCaptureSession(withPosition: newCameraPosition)
         let newVideoLayer: AVCaptureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession!)
-        newVideoLayer.frame = self.getPresetPreviewFrame()
+        newVideoLayer.frame = self.view.bounds
         newVideoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        self.view.layer.replaceSublayer(self.videoLayer!, with: newVideoLayer)
-        self.videoLayer = newVideoLayer
         
-        // the 2nd half of y-axis rotation
-        let expandingAnimation = CABasicAnimation(keyPath: "transform.scale.x")
-        expandingAnimation.fromValue = 0
-        expandingAnimation.toValue = 1
-        self.view.layer.add(expandingAnimation, forKey: nil)
-        
-        self.setupOperatableUIs()
-        self.applyPresetPreviewFrame()
+        // horizontal flip
+        UIView.transition(with: self.view, duration: 1.0, options: [.transitionFlipFromLeft], animations: nil, completion: { _ in
+            // replace camera preview with new one
+            self.view.layer.replaceSublayer(self.previewLayer!, with: newVideoLayer)
+            self.applyPresetPreviewFrame()
+            self.cameraPosition = newCameraPosition
+            self.previewLayer = newVideoLayer
+        })
     }
     
     private var cameraPosition_: AVCaptureDevice.Position = .back
@@ -116,7 +107,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var videoDevice: AVCaptureDevice?
     
     private var baseZoomFanctor: CGFloat = 1.0
-    private var videoLayer: AVCaptureVideoPreviewLayer? = nil
+    private var previewLayer: AVCaptureVideoPreviewLayer? = nil
     private var slider: UISlider = UISlider()
     private var buttonForFullFrame: UIButton = UIButton()
     private var buttonForSquareFrame: UIButton = UIButton()
@@ -181,7 +172,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         let tempVideoTrack: AVAssetTrack = AVAsset(url: outputFileURL).tracks(withMediaType: AVMediaType.video)[0]
         let (orientation, _): (UIImage.Orientation, Bool) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
-        let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tempVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.videoLayer?.bounds)!, fullFrameRect: self.view.bounds)
+        let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tempVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.previewLayer?.bounds)!, fullFrameRect: self.view.bounds)
         
         self.cropMovie(
             sourceURL: outputFileURL,
@@ -225,10 +216,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     private func setupPreviewLayer() {
         // preview layer
-        self.videoLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
-        self.videoLayer?.frame = self.getPresetPreviewFrame()
-        self.videoLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        self.view.layer.addSublayer(self.videoLayer!)
+        self.previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
+        self.previewLayer?.frame = self.getPresetPreviewFrame()
+        self.previewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        self.view.layer.addSublayer(self.previewLayer!)
     }
     
     private func setupOperatableUIs() {
@@ -313,7 +304,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     @objc private func onSliderChanged(sender: UISlider) {
-        self.videoLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
+        self.previewLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
     }
     
     @objc private func onTapButtonForWideFrame(sender: UIButton) {
@@ -461,7 +452,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     private func forcePreviewFrameToResize(withResizingParameter resizingParameter: Float) {
         self.slider.value = resizingParameter
-        self.videoLayer?.frame = createResizedPreviewFrame(withResizingParameter: self.slider.value)
+        self.previewLayer?.frame = createResizedPreviewFrame(withResizingParameter: self.slider.value)
     }
     
     private func changeButtonColor(target: UIButton, color: UIColor) {
