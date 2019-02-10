@@ -92,9 +92,9 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         UIView.transition(with: self.view, duration: 1.0, options: [.transitionFlipFromLeft], animations: nil, completion: { _ in
             // replace camera preview with new one
             self.view.layer.replaceSublayer(self.previewLayer!, with: newVideoLayer)
-            self.applyPresetPreviewFrame()
             self.cameraPosition = newCameraPosition
             self.previewLayer = newVideoLayer
+            self.applyPresetPreviewFrame()
         })
     }
     
