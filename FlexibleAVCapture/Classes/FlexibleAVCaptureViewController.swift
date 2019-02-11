@@ -30,6 +30,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             if self.captureSession?.canSetSessionPreset(quality) ?? false {
                 self.videoQuality_ = quality
                 self.captureSession?.sessionPreset = quality
+            } else {
+                debugPrint("Failed to set videoQuality to " + quality.rawValue + ".")
             }
             self.captureSession?.commitConfiguration()
         }
