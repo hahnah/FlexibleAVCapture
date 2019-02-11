@@ -64,9 +64,11 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     public func reverseCameraPosition() {
         guard let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else {
+            debugPrint("Failed to reverseCameraPosition because there is no capture session's output.")
             return
         }
         guard !captureOutput.isRecording else {
+            debugPrint("Failed to reverseCameraPosition because the recording still working.")
             return
         }
         
