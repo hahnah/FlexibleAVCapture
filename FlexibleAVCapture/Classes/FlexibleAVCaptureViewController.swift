@@ -17,9 +17,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         get {
             return self.cameraPosition_
         }
-        set(position) {
-            self.cameraPosition_ = position
-        }
     }
     public var videoQuality: AVCaptureSession.Preset {
         get {
