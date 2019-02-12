@@ -19,16 +19,16 @@ class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.showFlexibleAVCaptureView()
+        
+        self.flexibleAVCaptureVC.flexibleCaptureDelegate = self
+        if self.flexibleAVCaptureVC.canSetVideoQuality(.high) {
+            self.flexibleAVCaptureVC.setVideoQuality(.high)
+        }
+        self.present(flexibleAVCaptureVC, animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-    }
-    
-    func showFlexibleAVCaptureView() {
-        self.flexibleAVCaptureVC.flexibleCaptureDelegate = self
-        self.present(flexibleAVCaptureVC, animated: true, completion: nil)
     }
     
     func didCapture(withFileURL fileURL: URL) {
