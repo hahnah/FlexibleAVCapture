@@ -105,6 +105,36 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         })
     }
     
+    public func canSetVideoQuality(_ videoQuality: AVCaptureSession.Preset) -> Bool {
+        guard !((self.captureSession?.outputs.first as? AVCaptureMovieFileOutput)?.isRecording ?? true) else {
+            return false
+        }
+        var result: Bool = false
+        self.captureSession?.beginConfiguration()
+        if self.captureSession?.canSetSessionPreset(videoQuality) ?? false {
+            result = true
+        } else {
+            result = false
+        }
+        self.captureSession?.commitConfiguration()
+        return result
+    }
+    
+    public func setVideoQuality(_ videoQuality: AVCaptureSession.Preset) {
+        guard !((self.captureSession?.outputs.first as? AVCaptureMovieFileOutput)?.isRecording ?? true)  else {
+            debugPrint("Failed to setVideoQuality, because the capture session is still running or there is no capture session.")
+            return
+        }
+        self.captureSession?.beginConfiguration()
+        if self.captureSession?.canSetSessionPreset(videoQuality) ?? false {
+            self.captureSession?.sessionPreset = videoQuality
+            self.videoQuality_ = videoQuality
+        } else {
+            debugPrint("Failed to set videoQuality to " + videoQuality.rawValue + ".")
+        }
+        self.captureSession?.commitConfiguration()
+    }
+    
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
@@ -218,14 +248,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         captureOutput.maxRecordedDuration = self.maxDuration
         self.captureSession?.addOutput(captureOutput)
         
-        self.captureSession?.beginConfiguration()
-        if self.captureSession?.canSetSessionPreset(videoQuality) ?? false {
-            self.captureSession?.sessionPreset = videoQuality
-            self.videoQuality_ = videoQuality
-        } else {
-            debugPrint("Failed to set videoQuality to " + videoQuality.rawValue + ".")
+        // video quality setting
+        if self.canSetVideoQuality(videoQuality) {
+            self.setVideoQuality(videoQuality)
         }
-        self.captureSession?.commitConfiguration()
         
         self.captureSession?.startRunning()
     }
