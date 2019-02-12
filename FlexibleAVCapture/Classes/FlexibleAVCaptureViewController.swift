@@ -25,16 +25,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         get {
             return self.videoQuality_
         }
-        set(quality) {
-            self.captureSession?.beginConfiguration()
-            if self.captureSession?.canSetSessionPreset(quality) ?? false {
-                self.videoQuality_ = quality
-                self.captureSession?.sessionPreset = quality
-            } else {
-                debugPrint("Failed to set videoQuality to " + quality.rawValue + ".")
-            }
-            self.captureSession?.commitConfiguration()
-        }
     }
     public var minimumFrameRatio: CGFloat {
         get {
@@ -83,11 +73,10 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }
         
         self.cameraPosition = self.cameraPosition == .front ? .back : .front
-        //self.setupCaptureSession(withPosition: self.cameraPosition)
         
         // prepare new capture session preview with opposite camera
         let newCameraPosition: AVCaptureDevice.Position = self.videoDevice?.position == .front ? .back : .front
-        self.setupCaptureSession(withPosition: newCameraPosition)
+        self.setupCaptureSession(withPosition: newCameraPosition, withQuality: self.videoQuality)
         let newVideoLayer: AVCaptureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession!)
         newVideoLayer.frame = self.view.bounds
         newVideoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
@@ -132,7 +121,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     override public func viewWillAppear(_ animated: Bool) {
         self.view.backgroundColor = UIColor.black
-        self.setupCaptureSession(withPosition: self.cameraPosition)
+        self.setupCaptureSession(withPosition: self.cameraPosition, withQuality: self.videoQuality)
         self.setupPreviewLayer()
         self.setupOperatableUIs()
         self.applyPresetPreviewFrame()
@@ -196,7 +185,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
     }
     
-    private func setupCaptureSession(withPosition cameraPosition: AVCaptureDevice.Position) {
+    private func setupCaptureSession(withPosition cameraPosition: AVCaptureDevice.Position, withQuality videoQuality: AVCaptureSession.Preset) {
         self.videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: cameraPosition)
         let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
         
@@ -214,6 +203,15 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         let captureOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
         captureOutput.maxRecordedDuration = self.maxDuration
         self.captureSession?.addOutput(captureOutput)
+        
+        self.captureSession?.beginConfiguration()
+        if self.captureSession?.canSetSessionPreset(videoQuality) ?? false {
+            self.captureSession?.sessionPreset = videoQuality
+            self.videoQuality_ = videoQuality
+        } else {
+            debugPrint("Failed to set videoQuality to " + videoQuality.rawValue + ".")
+        }
+        self.captureSession?.commitConfiguration()
         
         self.captureSession?.startRunning()
     }
