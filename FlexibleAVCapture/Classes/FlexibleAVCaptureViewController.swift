@@ -55,11 +55,13 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     public init() {
         super.init(nibName: nil, bundle: nil)
         self.cameraPosition_ = .back
+        self.setupCaptureSession(withPosition: self.cameraPosition, withQuality: self.videoQuality)
     }
     
     public init(cameraPosition: AVCaptureDevice.Position) {
         super.init(nibName: nil, bundle: nil)
         self.cameraPosition_ = cameraPosition
+        self.setupCaptureSession(withPosition: self.cameraPosition, withQuality: self.videoQuality)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -165,7 +167,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     override public func viewWillAppear(_ animated: Bool) {
         self.view.backgroundColor = UIColor.black
-        self.setupCaptureSession(withPosition: self.cameraPosition, withQuality: self.videoQuality)
         self.setupPreviewLayer()
         self.setupOperatableUIs()
         self.applyPresetPreviewFrame()
