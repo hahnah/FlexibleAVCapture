@@ -52,6 +52,20 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }
     }
     
+    public init() {
+        super.init(nibName: nil, bundle: nil)
+        self.cameraPosition_ = .back
+    }
+    
+    public init(cameraPosition: AVCaptureDevice.Position) {
+        super.init(nibName: nil, bundle: nil)
+        self.cameraPosition_ = cameraPosition
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     public func reverseCameraPosition() {
         guard let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else {
             debugPrint("Failed to reverseCameraPosition because there is no capture session's output.")

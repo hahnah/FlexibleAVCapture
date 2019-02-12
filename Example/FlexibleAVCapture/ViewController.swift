@@ -11,7 +11,7 @@ import Photos
 
 class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate {
     
-    let flexibleAVCaptureVC: FlexibleAVCaptureViewController = FlexibleAVCaptureViewController()
+    let flexibleAVCaptureVC: FlexibleAVCaptureViewController = FlexibleAVCaptureViewController(cameraPosition: .back)
 
     override func viewDidLoad() {
         super.viewDidLoad()
