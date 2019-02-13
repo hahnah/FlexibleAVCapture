@@ -85,7 +85,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             self.captureSession?.removeOutput(output)
         }
         
-        self.cameraPosition = self.cameraPosition == .front ? .back : .front
+        self.cameraPosition_ = self.cameraPosition == .front ? .back : .front
         
         // prepare new capture session preview with opposite camera
         let newCameraPosition: AVCaptureDevice.Position = self.videoDevice?.position == .front ? .back : .front
@@ -98,7 +98,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         UIView.transition(with: self.view, duration: 1.0, options: [.transitionFlipFromLeft], animations: nil, completion: { _ in
             // replace camera preview with new one
             self.view.layer.replaceSublayer(self.previewLayer!, with: newVideoLayer)
-            self.cameraPosition = newCameraPosition
+            self.cameraPosition_ = newCameraPosition
             self.previewLayer = newVideoLayer
             self.applyPresetPreviewFrame()
         })
