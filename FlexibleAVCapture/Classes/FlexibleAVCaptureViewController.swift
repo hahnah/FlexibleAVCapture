@@ -12,7 +12,7 @@ import Photos
 public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
-    public var maxDuration: CMTime = CMTimeMake(value: 60, timescale: 1)
+    public var maxDuration: CMTime = .zero
     public var cameraPosition: AVCaptureDevice.Position {
         get {
             return self.cameraPosition_
