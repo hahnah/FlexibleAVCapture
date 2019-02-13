@@ -12,7 +12,23 @@ import Photos
 public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
-    public var maxDuration: CMTime = .zero
+    public var maxDuration: CMTime {
+        get {
+            return self.maxDuration_
+        }
+        set(newMaxDuration) {
+            guard !((self.captureSession?.outputs.first as? AVCaptureMovieFileOutput)?.isRecording ?? true) else {
+                debugPrint("Failed to set maxDuration, because the capture session is still running or there is no capture session.")
+                return
+            }
+            if let movieOutput = (self.captureSession?.outputs.first as! AVCaptureMovieFileOutput?) {
+                movieOutput.maxRecordedDuration = newMaxDuration
+                self.maxDuration_ = movieOutput.maxRecordedDuration
+            } else {
+                debugPrint("Failed to set maxDuration for " + newMaxDuration.seconds.debugDescription + " seconds.")
+            }
+        }
+    }
     public var cameraPosition: AVCaptureDevice.Position {
         get {
             return self.cameraPosition_
@@ -134,6 +150,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.captureSession?.commitConfiguration()
     }
     
+    private var maxDuration_: CMTime = .invalid
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
