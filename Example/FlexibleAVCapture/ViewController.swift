@@ -24,7 +24,7 @@ class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate 
         if self.flexibleAVCaptureVC.canSetVideoQuality(.high) {
             self.flexibleAVCaptureVC.setVideoQuality(.high)
         }
-        self.flexibleAVCaptureVC.maxDuration = CMTimeMake(value: 60, timescale: 1)
+        self.flexibleAVCaptureVC.maxRecordDuration = CMTimeMake(value: 60, timescale: 1)
         self.present(flexibleAVCaptureVC, animated: true, completion: nil)
     }
 
