@@ -341,7 +341,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.reverseButton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
         self.reverseButton.center = CGPoint(x: self.view.bounds.width - self.reverseButton.frame.width, y: self.view.bounds.height - 70)
         self.reverseButton.backgroundColor = UIColor.clear
-        self.reverseButton.titleLabel?.font = UIFont.systemFont(ofSize: 44)
+        self.reverseButton.titleLabel?.font = UIFont.systemFont(ofSize: 40)
         self.reverseButton.setTitle("↺", for: .normal)
         self.reverseButton.setTitleColor(UIColor.white, for: .normal)
         self.reverseButton.setTitleColor(UIColor.lightGray, for: .disabled)
