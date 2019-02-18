@@ -45,7 +45,7 @@
 		7514E18BF3E433412877B2CE /* Pods-FlexibleAVCapture_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlexibleAVCapture_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FlexibleAVCapture_Tests/Pods-FlexibleAVCapture_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		8A6C13F6F2F4438074883482 /* Pods_FlexibleAVCapture_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlexibleAVCapture_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		911935F755240CFA93DF4042 /* Pods_FlexibleAVCapture_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlexibleAVCapture_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		966FDD712562637FBE9822CB /* FlexibleAVCapture.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FlexibleAVCapture.podspec; path = ../FlexibleAVCapture.podspec; sourceTree = "<group>"; };
+		966FDD712562637FBE9822CB /* FlexibleAVCapture.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = FlexibleAVCapture.podspec; path = ../FlexibleAVCapture.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		98462A9242FC5A76C776A36D /* Pods-FlexibleAVCapture_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlexibleAVCapture_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FlexibleAVCapture_Example/Pods-FlexibleAVCapture_Example.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
