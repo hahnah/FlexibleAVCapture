@@ -329,10 +329,12 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         // record button
         self.recordButton.frame = CGRect(x: 0, y: 0, width: 140, height: 50)
-        self.recordButton.backgroundColor = UIColor.gray
+        self.recordButton.backgroundColor = UIColor.clear
         self.recordButton.layer.masksToBounds = true
         self.recordButton.setTitle("Record", for: UIControl.State.normal)
         self.recordButton.layer.cornerRadius = 20.0
+        self.recordButton.layer.borderColor = UIColor.white.cgColor
+        self.recordButton.layer.borderWidth = 2.0
         self.recordButton.layer.position = CGPoint(x: self.view.bounds.width * 0.5, y:self.view.bounds.height - 70)
         self.recordButton.addTarget(self, action: #selector(self.onTapRecordButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.recordButton)
@@ -513,10 +515,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.previewLayer?.frame = createResizedPreviewFrame(withResizingParameter: self.slider.value)
     }
     
-    private func changeButtonColor(target: UIButton, color: UIColor) {
-        target.backgroundColor = color
-    }
-    
     private func cropMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, croppingRect: CGRect, complition: @escaping () -> Void) {
         self.exportMovie(sourceURL: sourceURL, destinationURL: destinationURL, fileType: fileType, fullFrameRect: self.view.bounds, croppingRect: croppingRect, completion: complition)
     }
@@ -545,11 +543,9 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     private func updateRecordButton(enableStartRecording: Bool) {
         if enableStartRecording {
-            self.changeButtonColor(target: self.recordButton, color: UIColor.gray)
             self.recordButton.setTitle("Record", for: .normal)
             self.recordButton.isEnabled = false // to prevent restarting recording until fileoutput finish
         } else {
-            self.changeButtonColor(target: self.recordButton, color: UIColor.red)
             self.recordButton.setTitle("●Recording", for: .normal)
         }
     }
