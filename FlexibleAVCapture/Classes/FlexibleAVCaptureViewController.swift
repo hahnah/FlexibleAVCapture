@@ -64,6 +64,19 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             }
         }
     }
+    public var allowReversingCamera: Bool {
+        get {
+            return self.allowReversingCamera_
+        }
+        set(ifAllow) {
+            self.allowReversingCamera_ = ifAllow
+            if ifAllow {
+                self.showReversingButton()
+            } else {
+                self.hideReversingButton()
+            }
+        }
+    }
     
     public init() {
         super.init(nibName: nil, bundle: nil)
@@ -154,6 +167,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowResizing_: Bool = true
+    private var allowReversingCamera_: Bool = true
     private var videoQuality_: AVCaptureSession.Preset = .medium
     
     private var captureSession: AVCaptureSession? = nil
@@ -570,6 +584,14 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForSquareFrame.isHidden = true
         self.buttonForWideFrame.isHidden = true
         self.buttonForTallFrame.isHidden = true
+    }
+    
+    private func showReversingButton() {
+        self.reverseButton.isHidden = false
+    }
+    
+    private func hideReversingButton() {
+        self.reverseButton.isHidden = true
     }
     
     private func focusWithMode(focusMode : AVCaptureDevice.FocusMode, exposeWithMode expusureMode :AVCaptureDevice.ExposureMode, atDevicePoint point:CGPoint, motiorSubjectAreaChange monitorSubjectAreaChange:Bool) {
