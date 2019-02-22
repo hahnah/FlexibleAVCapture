@@ -163,6 +163,55 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.captureSession?.commitConfiguration()
     }
     
+    public func replaceFullFramingButton(with button: UIButton) {
+        button.addTarget(self, action: #selector(self.onTapButtonForFullFrame(sender:)), for: .touchUpInside)
+        self.buttonForFullFrame.removeFromSuperview()
+        self.buttonForFullFrame = button
+        self.view.addSubview(button)
+    }
+    
+    public func replaceSquareFramingButton(with button: UIButton) {
+        button.addTarget(self, action: #selector(self.onTapButtonForSquareFrame(sender:)), for: .touchUpInside)
+        self.buttonForSquareFrame.removeFromSuperview()
+        self.buttonForSquareFrame = button
+        self.view.addSubview(button)
+    }
+    
+    public func replaceWideFramingButton(with button: UIButton) {
+        button.addTarget(self, action: #selector(self.onTapButtonForWideFrame(sender:)), for: .touchUpInside)
+        self.buttonForWideFrame.removeFromSuperview()
+        self.buttonForWideFrame = button
+        self.view.addSubview(button)
+    }
+    
+    public func replaceTallFramingButton(with button: UIButton) {
+        button.addTarget(self, action: #selector(self.onTapButtonForTallFrame(sender:)), for: .touchUpInside)
+        self.buttonForTallFrame.removeFromSuperview()
+        self.buttonForTallFrame = button
+        self.view.addSubview(button)
+    }
+    
+    public func replaceResizingSlider(with slider: UISlider) {
+        slider.minimumValue = self.slider.minimumValue
+        slider.maximumValue = self.slider.maximumValue
+        slider.value = self.slider.value
+        slider.addTarget(self, action: #selector(self.onSliderChanged(sender:)), for: .valueChanged)
+        self.slider.removeFromSuperview()
+        self.slider = slider
+        self.view.addSubview(slider)
+    }
+    
+    public func replaceRecordButton(with button: UIButton) {
+        // Do refactoring record button before you implement here
+    }
+    
+    public func replaceReverseButton(with button: UIButton) {
+        button.addTarget(self, action: #selector(self.onTapReverseButton(sender:)), for: .touchUpInside)
+        self.reverseButton.removeFromSuperview()
+        self.reverseButton = button
+        self.view.addSubview(button)
+    }
+    
     private var maxRecordDuration_: CMTime = .invalid
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
@@ -191,19 +240,12 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-    }
-    
-    override public func viewWillAppear(_ animated: Bool) {
         self.view.backgroundColor = UIColor.black
         self.setupPreviewLayer()
         self.setupOperatableUIs()
         self.applyPresetPreviewFrame()
         self.setupPinchGestureRecognizer()
         self.setupTapGestureRecognizer()
-    }
-    
-    override public func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
     }
     
     override public func viewDidDisappear(_ animated: Bool) {
