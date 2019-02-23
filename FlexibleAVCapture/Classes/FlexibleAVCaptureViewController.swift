@@ -164,41 +164,66 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     public func replaceFullFramingButton(with button: UIButton) {
-        button.addTarget(self, action: #selector(self.onTapButtonForFullFrame(sender:)), for: .touchUpInside)
-        self.buttonForFullFrame.removeFromSuperview()
-        self.buttonForFullFrame = button
-        self.view.addSubview(button)
+        if self.isViewLoaded {
+            button.addTarget(self, action: #selector(self.onTapButtonForFullFrame(sender:)), for: .touchUpInside)
+            self.buttonForFullFrame.removeFromSuperview()
+            self.buttonForFullFrame = button
+            self.view.addSubview(button)
+        } else {
+            self.reservedButtonForFullFrame = button
+            self.isButtonForFullFrameReserved = true
+        }
     }
     
     public func replaceSquareFramingButton(with button: UIButton) {
-        button.addTarget(self, action: #selector(self.onTapButtonForSquareFrame(sender:)), for: .touchUpInside)
-        self.buttonForSquareFrame.removeFromSuperview()
-        self.buttonForSquareFrame = button
-        self.view.addSubview(button)
+        if self.isViewLoaded {
+            button.addTarget(self, action: #selector(self.onTapButtonForSquareFrame(sender:)), for: .touchUpInside)
+            self.buttonForSquareFrame.removeFromSuperview()
+            self.buttonForSquareFrame = button
+            self.view.addSubview(button)
+        } else {
+            self.reservedButtonForSquareFrame = button
+            self.isButtonForSquareFrameReserved = true
+        }
     }
     
     public func replaceWideFramingButton(with button: UIButton) {
-        button.addTarget(self, action: #selector(self.onTapButtonForWideFrame(sender:)), for: .touchUpInside)
-        self.buttonForWideFrame.removeFromSuperview()
-        self.buttonForWideFrame = button
-        self.view.addSubview(button)
+        if self.isViewLoaded {
+            button.addTarget(self, action: #selector(self.onTapButtonForWideFrame(sender:)), for: .touchUpInside)
+            self.buttonForWideFrame.removeFromSuperview()
+            self.buttonForWideFrame = button
+            self.view.addSubview(button)
+        } else {
+            self.reservedButtonForWideFrame = button
+            self.isButtonForWideFrameReserved = true
+        }
     }
     
     public func replaceTallFramingButton(with button: UIButton) {
-        button.addTarget(self, action: #selector(self.onTapButtonForTallFrame(sender:)), for: .touchUpInside)
-        self.buttonForTallFrame.removeFromSuperview()
-        self.buttonForTallFrame = button
-        self.view.addSubview(button)
+        if self.isViewLoaded {
+            button.addTarget(self, action: #selector(self.onTapButtonForTallFrame(sender:)), for: .touchUpInside)
+            self.buttonForTallFrame.removeFromSuperview()
+            self.buttonForTallFrame = button
+            self.view.addSubview(button)
+        } else {
+            self.reservedButtonForTallFrame = button
+            self.isButtonForTallFrameReserved = true
+        }
     }
     
     public func replaceResizingSlider(with slider: UISlider) {
-        slider.minimumValue = self.slider.minimumValue
-        slider.maximumValue = self.slider.maximumValue
-        slider.value = self.slider.value
-        slider.addTarget(self, action: #selector(self.onSliderChanged(sender:)), for: .valueChanged)
-        self.slider.removeFromSuperview()
-        self.slider = slider
-        self.view.addSubview(slider)
+        if self.isViewLoaded {
+            slider.minimumValue = self.slider.minimumValue
+            slider.maximumValue = self.slider.maximumValue
+            slider.value = self.slider.value
+            slider.addTarget(self, action: #selector(self.onSliderChanged(sender:)), for: .valueChanged)
+            self.slider.removeFromSuperview()
+            self.slider = slider
+            self.view.addSubview(slider)
+        } else {
+            self.reservedSlider = slider
+            self.isSliderReserved = true
+        }
     }
     
     public func replaceRecordButton(with button: UIButton) {
@@ -206,10 +231,15 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     public func replaceReverseButton(with button: UIButton) {
-        button.addTarget(self, action: #selector(self.onTapReverseButton(sender:)), for: .touchUpInside)
-        self.reverseButton.removeFromSuperview()
-        self.reverseButton = button
-        self.view.addSubview(button)
+        if self.isViewLoaded {
+            button.addTarget(self, action: #selector(self.onTapReverseButton(sender:)), for: .touchUpInside)
+            self.reverseButton.removeFromSuperview()
+            self.reverseButton = button
+            self.view.addSubview(button)
+        } else {
+            self.reservedReverseButton = button
+            self.isReverseButtonReserved = true
+        }
     }
     
     private var maxRecordDuration_: CMTime = .invalid
@@ -231,6 +261,18 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var buttonForTallFrame: UIButton = UIButton()
     private var recordButton: UIButton = UIButton()
     private var reverseButton: UIButton = UIButton()
+    private var reservedSlider: UISlider? = nil
+    private var reservedButtonForFullFrame: UIButton? = nil
+    private var reservedButtonForSquareFrame: UIButton? = nil
+    private var reservedButtonForWideFrame: UIButton? = nil
+    private var reservedButtonForTallFrame: UIButton? = nil
+    private var reservedReverseButton: UIButton? = nil
+    private var isSliderReserved: Bool = false
+    private var isButtonForFullFrameReserved: Bool = false
+    private var isButtonForSquareFrameReserved: Bool = false
+    private var isButtonForWideFrameReserved: Bool = false
+    private var isButtonForTallFrameReserved: Bool = false
+    private var isReverseButtonReserved: Bool = false
     private var isVideoSaved: Bool = false
     private let boundaries: Array<Float> = [0.0,
                                     1.0 / 3.0,
@@ -337,10 +379,17 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     private func setupOperatableUIs() {
         // slider for adjusting camera preview size
-        let sliderWidth: CGFloat = self.view.bounds.width * 0.75
-        let sliderHeight: CGFloat = 40
-        let sliderRect: CGRect = CGRect(x: (self.view.bounds.width - sliderWidth) / 2, y: self.view.bounds.height - 150, width: sliderWidth, height: sliderHeight)
-        self.slider.frame = sliderRect
+        if self.isSliderReserved {
+            if let reservedSlider = self.reservedSlider {
+                self.slider = reservedSlider
+            }
+            self.isSliderReserved = false
+        } else {
+            let sliderWidth: CGFloat = self.view.bounds.width * 0.75
+            let sliderHeight: CGFloat = 40
+            let sliderRect: CGRect = CGRect(x: (self.view.bounds.width - sliderWidth) / 2, y: self.view.bounds.height - 150, width: sliderWidth, height: sliderHeight)
+            self.slider.frame = sliderRect
+        }
         self.slider.minimumValue = 0.0
         self.slider.maximumValue = 1.0
         self.slider.value = 0.0
@@ -348,38 +397,66 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.slider)
         
         // button on slider for wide frame
-        self.buttonForWideFrame.frame = CGRect(x: 0, y: 0, width: 45, height: 30)
-        self.buttonForWideFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[0]), y: self.slider.center.y - 40)
-        self.buttonForWideFrame.setTitle("Wide", for: .normal)
-        self.buttonForWideFrame.setTitleColor(UIColor.white, for: .normal)
-        self.buttonForWideFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        if self.isButtonForWideFrameReserved {
+            if let reservedButton = self.reservedButtonForWideFrame {
+                self.buttonForWideFrame = reservedButton
+            }
+            self.isButtonForWideFrameReserved = false
+        } else {
+            self.buttonForWideFrame.frame = CGRect(x: 0, y: 0, width: 45, height: 30)
+            self.buttonForWideFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[0]), y: self.slider.center.y - 40)
+            self.buttonForWideFrame.setTitle("Wide", for: .normal)
+            self.buttonForWideFrame.setTitleColor(UIColor.white, for: .normal)
+            self.buttonForWideFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        }
         self.buttonForWideFrame.addTarget(self, action: #selector(self.onTapButtonForWideFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForWideFrame)
         
         // button on slider for square frame
-        self.buttonForSquareFrame.frame = CGRect(x: 0, y: 0, width: 60, height: 30)
-        self.buttonForSquareFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[1]), y: self.slider.center.y - 40)
-        self.buttonForSquareFrame.setTitle("Square", for: .normal)
-        self.buttonForSquareFrame.setTitleColor(UIColor.white, for: .normal)
-        self.buttonForSquareFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        if self.isButtonForSquareFrameReserved {
+            if let reservedButton = self.reservedButtonForSquareFrame {
+                self.buttonForSquareFrame = reservedButton
+            }
+            self.isButtonForSquareFrameReserved = false
+        } else {
+            self.buttonForSquareFrame.frame = CGRect(x: 0, y: 0, width: 60, height: 30)
+            self.buttonForSquareFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[1]), y: self.slider.center.y - 40)
+            self.buttonForSquareFrame.setTitle("Square", for: .normal)
+            self.buttonForSquareFrame.setTitleColor(UIColor.white, for: .normal)
+            self.buttonForSquareFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        }
         self.buttonForSquareFrame.addTarget(self, action: #selector(self.onTapButtonForSquareFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForSquareFrame)
         
         // button on slider for full frame
-        self.buttonForFullFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 30)
-        self.buttonForFullFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[2]), y: self.slider.center.y - 40)
-        self.buttonForFullFrame.setTitle("Full", for: .normal)
-        self.buttonForFullFrame.setTitleColor(UIColor.white, for: .normal)
-        self.buttonForFullFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        if self.isButtonForFullFrameReserved {
+            if let reservedButton = self.reservedButtonForFullFrame {
+                self.buttonForFullFrame = reservedButton
+            }
+            self.isButtonForFullFrameReserved = false
+        } else {
+            self.buttonForFullFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 30)
+            self.buttonForFullFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[2]), y: self.slider.center.y - 40)
+            self.buttonForFullFrame.setTitle("Full", for: .normal)
+            self.buttonForFullFrame.setTitleColor(UIColor.white, for: .normal)
+            self.buttonForFullFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        }
         self.buttonForFullFrame.addTarget(self, action: #selector(self.onTapButtonForFullFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForFullFrame)
         
         // button on slider for tall frame
-        self.buttonForTallFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 30)
-        self.buttonForTallFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[3]), y: self.slider.center.y - 40)
-        self.buttonForTallFrame.setTitle("Tall", for: .normal)
-        self.buttonForTallFrame.setTitleColor(UIColor.white, for: .normal)
-        self.buttonForTallFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        if self.isButtonForTallFrameReserved {
+            if let reservedButton = self.reservedButtonForTallFrame {
+                self.buttonForTallFrame = reservedButton
+            }
+            self.isButtonForTallFrameReserved = false
+        } else {
+            self.buttonForTallFrame.frame = CGRect(x: 0, y: 0, width: 40, height: 30)
+            self.buttonForTallFrame.center = CGPoint(x: self.slider.frame.minX + (self.slider.frame.maxX - self.slider.frame.minX) * CGFloat(self.boundaries[3]), y: self.slider.center.y - 40)
+            self.buttonForTallFrame.setTitle("Tall", for: .normal)
+            self.buttonForTallFrame.setTitleColor(UIColor.white, for: .normal)
+            self.buttonForTallFrame.setTitleColor(UIColor.lightGray, for: .disabled)
+        }
         self.buttonForTallFrame.addTarget(self, action: #selector(self.onTapButtonForTallFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForTallFrame)
         
@@ -396,13 +473,20 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.recordButton)
         
         // camera-reversing button
-        self.reverseButton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
-        self.reverseButton.center = CGPoint(x: self.view.bounds.width - self.reverseButton.frame.width, y: self.view.bounds.height - 70)
-        self.reverseButton.backgroundColor = UIColor.clear
-        self.reverseButton.titleLabel?.font = UIFont.systemFont(ofSize: 40)
-        self.reverseButton.setTitle("↺", for: .normal)
-        self.reverseButton.setTitleColor(UIColor.white, for: .normal)
-        self.reverseButton.setTitleColor(UIColor.lightGray, for: .disabled)
+        if self.isReverseButtonReserved {
+            if let reservedButton = self.reservedReverseButton {
+                self.reverseButton = reservedButton
+            }
+            self.isReverseButtonReserved = false
+        } else {
+            self.reverseButton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+            self.reverseButton.center = CGPoint(x: self.view.bounds.width - self.reverseButton.frame.width, y: self.view.bounds.height - 70)
+            self.reverseButton.backgroundColor = UIColor.clear
+            self.reverseButton.titleLabel?.font = UIFont.systemFont(ofSize: 40)
+            self.reverseButton.setTitle("↺", for: .normal)
+            self.reverseButton.setTitleColor(UIColor.white, for: .normal)
+            self.reverseButton.setTitleColor(UIColor.lightGray, for: .disabled)
+        }
         self.reverseButton.addTarget(self, action: #selector(self.onTapReverseButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.reverseButton)
     }
