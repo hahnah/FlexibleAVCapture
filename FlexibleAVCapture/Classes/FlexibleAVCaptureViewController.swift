@@ -250,6 +250,14 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }
     }
     
+    public func forceResize(withResizingParameter resizingParameter: Float) {
+        guard 0 <= resizingParameter && resizingParameter <= 1.0 else {
+            debugPrint("Illegal parameter in forceResize. withResizingParameter should fulill the condition 0 ≦ withResizingParameter ≦ 1.")
+            return
+        }
+        self.forcePreviewFrameToResize(withResizingParameter: resizingParameter)
+    }
+    
     private var maxRecordDuration_: CMTime = .invalid
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
@@ -319,14 +327,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.captureSession?.outputs.forEach { output in
             self.captureSession?.removeOutput(output)
         }
-    }
-    
-    public func forceResize(withResizingParameter resizingParameter: Float) {
-        guard 0 <= resizingParameter && resizingParameter <= 1.0 else {
-            debugPrint("Illegal parameter in forceResize. withResizingParameter should fulill the condition 0 ≦ withResizingParameter ≦ 1.")
-            return
-        }
-        self.forcePreviewFrameToResize(withResizingParameter: resizingParameter)
     }
     
     public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
