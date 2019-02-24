@@ -279,6 +279,17 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
                                     2.0 / 3.0,
                                     1.0]
     
+    // support only portrait so far (v1.0.0)
+    override public var shouldAutorotate: Bool {
+        get {
+            return false
+        }
+    }
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        get {
+            return .portrait
+        }
+    }
     
     override public func viewDidLoad() {
         super.viewDidLoad()
