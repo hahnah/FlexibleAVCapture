@@ -17,18 +17,17 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
-  s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
+  s.description      = 'This pod provides a kind of AV capture view controller with flexible camera frame. It includes default capture settings, preview layer, buttons, tap-gesture focus, pinch-gesture, and so on.'
 
   s.homepage         = 'https://github.com/hahnah/FlexibleAVCapture'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+  s.screenshots      = 'https://raw.githubusercontent.com/hahnah/FlexibleAVCapture/master/screencapture.gif'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'hahnah' => 'superhahnah@gmail.com' }
-  s.source           = { :git => 'https://github.com/hahnah/FlexibleAVCapture.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/hahnah/FlexibleAVCapture.git', :tag => '1.0.0' }
   s.social_media_url = 'https://twitter.com/superhahnah'
 
   s.ios.deployment_target = '11.0'
+  s.swift_version = '4.2'
 
   s.source_files = 'FlexibleAVCapture/Classes/**/*'
   
