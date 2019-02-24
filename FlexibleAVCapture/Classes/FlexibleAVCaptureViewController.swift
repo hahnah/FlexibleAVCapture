@@ -51,26 +51,26 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             self.minimumFrameRatio_ = newRatio
         }
     }
-    public var allowResizing: Bool {
+    public var allowsResizing: Bool {
         get {
-            return self.allowResizing_
+            return self.allowsResizing_
         }
-        set(ifAllow) {
-            self.allowResizing_ = ifAllow
-            if ifAllow {
+        set(ifAllowed) {
+            self.allowsResizing_ = ifAllowed
+            if ifAllowed {
                 self.showResizingUIs()
             } else {
                 self.hideResizingUIs()
             }
         }
     }
-    public var allowReversingCamera: Bool {
+    public var allowsReversingCamera: Bool {
         get {
-            return self.allowReversingCamera_
+            return self.allowsReversingCamera_
         }
-        set(ifAllow) {
-            self.allowReversingCamera_ = ifAllow
-            if ifAllow {
+        set(ifAllowed) {
+            self.allowsReversingCamera_ = ifAllowed
+            if ifAllowed {
                 self.showReversingButton()
             } else {
                 self.hideReversingButton()
@@ -261,8 +261,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var maxRecordDuration_: CMTime = .invalid
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
-    private var allowResizing_: Bool = true
-    private var allowReversingCamera_: Bool = true
+    private var allowsResizing_: Bool = true
+    private var allowsReversingCamera_: Bool = true
     private var videoQuality_: AVCaptureSession.Preset = .medium
     
     private var captureSession: AVCaptureSession? = nil
