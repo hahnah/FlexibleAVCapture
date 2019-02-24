@@ -310,8 +310,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     
     public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
         /* NOTE: For better response of "Record" button's changing to "●Recording", do not call these two functions here:
-         *         - self.updateRecordButton(enableStartRecording: false)
-         *         - self.disableResizingUIs()
+         *          - self.recordButton.isSelected = true
+         *          - self.disableOperatableUIs()
          */
     }
     
@@ -332,7 +332,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             complition: {
                 DispatchQueue.main.async {
                     self.isVideoSaved = false
-                    self.updateRecordButton(enableStartRecording: true)
                     self.recordButton.isEnabled = true
                     self.enableOperatableUIs()
                     self.saveSliderValue()
@@ -464,7 +463,14 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.recordButton.frame = CGRect(x: 0, y: 0, width: 140, height: 50)
         self.recordButton.backgroundColor = UIColor.clear
         self.recordButton.layer.masksToBounds = true
-        self.recordButton.setTitle("Record", for: UIControl.State.normal)
+        self.recordButton.setTitle("Record", for: .normal)
+        self.recordButton.setTitle("Record", for: .highlighted)
+        self.recordButton.setTitle("●Recording", for: .selected)
+        self.recordButton.setTitle("Record", for: .disabled)
+        self.recordButton.setTitleColor(UIColor.white, for: .normal)
+        self.recordButton.setTitleColor(UIColor.white, for: .highlighted)
+        self.recordButton.setTitleColor(UIColor.white, for: .selected)
+        self.recordButton.setTitleColor(UIColor.white, for: .disabled)
         self.recordButton.layer.cornerRadius = 20.0
         self.recordButton.layer.borderColor = UIColor.white.cgColor
         self.recordButton.layer.borderWidth = 2.0
@@ -579,6 +585,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         if captureOutput.isRecording {
             // stop recording
+            self.recordButton.isEnabled = false
+            self.recordButton.isSelected = false
             captureOutput.stopRecording()
         } else {
             // start recording
@@ -586,7 +594,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
             captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             
-            self.updateRecordButton(enableStartRecording: false)
+            self.recordButton.isSelected = true
             self.disableOperatableUIs()
         }
     }
@@ -679,15 +687,6 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.buttonForWideFrame.isEnabled = false
         self.buttonForTallFrame.isEnabled = false
         self.reverseButton.isEnabled = false
-    }
-    
-    private func updateRecordButton(enableStartRecording: Bool) {
-        if enableStartRecording {
-            self.recordButton.setTitle("Record", for: .normal)
-            self.recordButton.isEnabled = false // to prevent restarting recording until fileoutput finish
-        } else {
-            self.recordButton.setTitle("●Recording", for: .normal)
-        }
     }
     
     private func saveSliderValue() {
