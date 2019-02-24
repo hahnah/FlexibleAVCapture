@@ -227,7 +227,15 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     }
     
     public func replaceRecordButton(with button: UIButton) {
-        // Do refactoring record button before you implement here
+        if self.isViewLoaded {
+            button.addTarget(self, action: #selector(self.onTapRecordButton(sender:)), for: .touchUpInside)
+            self.recordButton.removeFromSuperview()
+            self.recordButton = button
+            self.view.addSubview(button)
+        } else {
+            self.reservedRecordButton = button
+            self.isRecordButtonReserved = true
+        }
     }
     
     public func replaceReverseButton(with button: UIButton) {
@@ -266,12 +274,14 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var reservedButtonForSquareFrame: UIButton? = nil
     private var reservedButtonForWideFrame: UIButton? = nil
     private var reservedButtonForTallFrame: UIButton? = nil
+    private var reservedRecordButton: UIButton? = nil
     private var reservedReverseButton: UIButton? = nil
     private var isSliderReserved: Bool = false
     private var isButtonForFullFrameReserved: Bool = false
     private var isButtonForSquareFrameReserved: Bool = false
     private var isButtonForWideFrameReserved: Bool = false
     private var isButtonForTallFrameReserved: Bool = false
+    private var isRecordButtonReserved: Bool = false
     private var isReverseButtonReserved: Bool = false
     private var isVideoSaved: Bool = false
     private let boundaries: Array<Float> = [0.0,
@@ -471,21 +481,28 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.view.addSubview(self.buttonForTallFrame)
         
         // record button
-        self.recordButton.frame = CGRect(x: 0, y: 0, width: 140, height: 50)
-        self.recordButton.backgroundColor = UIColor.clear
-        self.recordButton.layer.masksToBounds = true
-        self.recordButton.setTitle("Record", for: .normal)
-        self.recordButton.setTitle("Record", for: .highlighted)
-        self.recordButton.setTitle("●Recording", for: .selected)
-        self.recordButton.setTitle("Record", for: .disabled)
-        self.recordButton.setTitleColor(UIColor.white, for: .normal)
-        self.recordButton.setTitleColor(UIColor.white, for: .highlighted)
-        self.recordButton.setTitleColor(UIColor.white, for: .selected)
-        self.recordButton.setTitleColor(UIColor.white, for: .disabled)
-        self.recordButton.layer.cornerRadius = 20.0
-        self.recordButton.layer.borderColor = UIColor.white.cgColor
-        self.recordButton.layer.borderWidth = 2.0
-        self.recordButton.layer.position = CGPoint(x: self.view.bounds.width * 0.5, y:self.view.bounds.height - 70)
+        if self.isRecordButtonReserved {
+            if let reservedButton = self.reservedRecordButton {
+                self.recordButton = reservedButton
+            }
+            self.isRecordButtonReserved = false
+        } else {
+            self.recordButton.frame = CGRect(x: 0, y: 0, width: 140, height: 50)
+            self.recordButton.backgroundColor = UIColor.clear
+            self.recordButton.layer.masksToBounds = true
+            self.recordButton.setTitle("Record", for: .normal)
+            self.recordButton.setTitle("Record", for: .highlighted)
+            self.recordButton.setTitle("●Recording", for: .selected)
+            self.recordButton.setTitle("Record", for: .disabled)
+            self.recordButton.setTitleColor(UIColor.white, for: .normal)
+            self.recordButton.setTitleColor(UIColor.white, for: .highlighted)
+            self.recordButton.setTitleColor(UIColor.white, for: .selected)
+            self.recordButton.setTitleColor(UIColor.white, for: .disabled)
+            self.recordButton.layer.cornerRadius = 20.0
+            self.recordButton.layer.borderColor = UIColor.white.cgColor
+            self.recordButton.layer.borderWidth = 2.0
+            self.recordButton.layer.position = CGPoint(x: self.view.bounds.width * 0.5, y:self.view.bounds.height - 70)
+        }
         self.recordButton.addTarget(self, action: #selector(self.onTapRecordButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.recordButton)
         
