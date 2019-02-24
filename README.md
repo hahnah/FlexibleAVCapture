@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/cocoapods/l/FlexibleAVCapture.svg?style=flat)](https://cocoapods.org/pods/FlexibleAVCapture)
 [![Platform](https://img.shields.io/cocoapods/p/FlexibleAVCapture.svg?style=flat)](https://cocoapods.org/pods/FlexibleAVCapture)
 
+This is a class provides a kind of AV capture view controller with flexible camera frame. 
+
 ## Screen Capture
 
 ![screencapture](https://raw.githubusercontent.com/hahnah/FlexibleAVCapture/master/screencapture.gif)
