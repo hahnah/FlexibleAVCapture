@@ -14,7 +14,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
     public var maximumRecordDuration: CMTime {
         get {
-            return self.maxRecordDuration_
+            return self.maximumRecordDuration_
         }
         set(newMaxRecordDuration) {
             guard !((self.captureSession?.outputs.first as? AVCaptureMovieFileOutput)?.isRecording ?? true) else {
@@ -23,7 +23,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             }
             if let movieOutput = (self.captureSession?.outputs.first as! AVCaptureMovieFileOutput?) {
                 movieOutput.maxRecordedDuration = newMaxRecordDuration
-                self.maxRecordDuration_ = movieOutput.maxRecordedDuration
+                self.maximumRecordDuration_ = movieOutput.maxRecordedDuration
             } else {
                 debugPrint("Failed to set maximumRecordDuration for " + newMaxRecordDuration.seconds.debugDescription + " seconds.")
             }
@@ -258,7 +258,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.forcePreviewFrameToResize(withResizingParameter: resizingParameter)
     }
     
-    private var maxRecordDuration_: CMTime = .invalid
+    private var maximumRecordDuration_: CMTime = .invalid
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowsResizing_: Bool = true
