@@ -12,20 +12,20 @@ import Photos
 public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     
     public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
-    public var maxRecordDuration: CMTime {
+    public var maximumRecordDuration: CMTime {
         get {
             return self.maxRecordDuration_
         }
         set(newMaxRecordDuration) {
             guard !((self.captureSession?.outputs.first as? AVCaptureMovieFileOutput)?.isRecording ?? true) else {
-                debugPrint("Failed to set maxRecordDuration, because the capture session is still running or there is no capture session.")
+                debugPrint("Failed to set maximumRecordDuration, because the capture session is still running or there is no capture session.")
                 return
             }
             if let movieOutput = (self.captureSession?.outputs.first as! AVCaptureMovieFileOutput?) {
                 movieOutput.maxRecordedDuration = newMaxRecordDuration
                 self.maxRecordDuration_ = movieOutput.maxRecordedDuration
             } else {
-                debugPrint("Failed to set maxRecordDuration for " + newMaxRecordDuration.seconds.debugDescription + " seconds.")
+                debugPrint("Failed to set maximumRecordDuration for " + newMaxRecordDuration.seconds.debugDescription + " seconds.")
             }
         }
     }
@@ -378,7 +378,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         // add capture output
         let captureOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
-        captureOutput.maxRecordedDuration = self.maxRecordDuration
+        captureOutput.maxRecordedDuration = self.maximumRecordDuration
         self.captureSession?.addOutput(captureOutput)
         
         // video quality setting
