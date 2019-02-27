@@ -29,8 +29,8 @@ pod 'FlexibleAVCapture'
 
 Your view controller should satisfy the following conditions:
 
-+ inherit `FlexibleAVCaptureDelegate`
-+ implement `didCapture(withFileURL fileURL: URL)` function
++ Adopt `FlexibleAVCaptureDelegate` protocol and implement `didCapture(withFileURL fileURL: URL)` function.
++ Create an `FlexibleAVCaptureViewController` object and set its `delegate`.
 
 ```swift
 import UIKit
@@ -56,7 +56,11 @@ class ViewController: UIViewController, FlexibleAVCaptureDelegate {
 
 ## API
 
-|                          |API
+### class FlexibleAVCaptureViewController
+
+An object that manages capture settings and a session. It also displays a preview layer and handles user interactions.
+
+|Topics                    |API
 |--------------------------|-----------------------------------------------------------------------------------
 |Initializing              |`init() -> FlexibleAVCaptureViewController`<br /> Initializes a FlexibleAVCaptureViewController object with back camera.
 |                          |`init(cameraPosition: AVCaptureDevice.Position) -> FlexibleAVCaptureViewController`<br /> Initializes a FlexibleAVCaptureViewController object to use back camera or front camera.
@@ -78,6 +82,15 @@ class ViewController: UIViewController, FlexibleAVCaptureDelegate {
 |                          |`func replaceSquareFramingButton(with button: UIButton) -> Void`<br /> Replace the existing square-framing button.
 |                          |`func replaceTallFramingButton(with button: UIButton) -> Void`<br /> Replace the existing tall-framing button.
 |                          |`func replaceWideFramingButton(with button: UIButton) -> Void`<br /> Replace the existing wide-framing button.
+
+### protocol FlexibleAVCaptureDelegate
+
+Defines an interface for delegates of FlexibleAVCaptureViewController to respond to events that occur in the process of recording a single file.  
+The delegate of an FlexibleAVCaptureViewController object must adopt the FlexibleAVCaptureDelegate protocol.
+
+|Topics           |API
+|-----------------|--------------------------------------------------------------
+|Delegate Methods |`didCapture(withFileURL fileURL: URL) -> Void`<br /> Informs the delegate when all pending data has been written to an output file. Required.
 
 ## Author
 
