@@ -29,21 +29,21 @@ pod 'FlexibleAVCapture'
 
 Your view controller should satisfy the following conditions:
 
-+ inherit `FlexibleAVCaptureViewControllerDelegate`
++ inherit `FlexibleAVCaptureDelegate`
 + implement `didCapture(withFileURL fileURL: URL)` function
 
 ```swift
 import UIKit
 import FlexibleAVCapture
 
-class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate {
+class ViewController: UIViewController, FlexibleAVCaptureDelegate {
     
     let flexibleAVCaptureVC: FlexibleAVCaptureViewController = FlexibleAVCaptureViewController()
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.flexibleAVCaptureVC.flexibleCaptureDelegate = self
+        self.flexibleAVCaptureVC.delegate = self
         self.present(flexibleAVCaptureVC, animated: true, completion: nil)
     }
     
@@ -60,7 +60,7 @@ class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate 
 |--------------------------|-----------------------------------------------------------------------------------
 |Initializing              |`init() -> FlexibleAVCaptureViewController`<br /> Initializes a FlexibleAVCaptureViewController object with back camera.
 |                          |`init(cameraPosition: AVCaptureDevice.Position) -> FlexibleAVCaptureViewController`<br /> Initializes a FlexibleAVCaptureViewController object to use back camera or front camera.
-|Managing Interactions     |`var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate?`<br /> The object that acts as the delegate of the flexible AV capture view.
+|Managing Interactions     |`var delegate: FlexibleAVCaptureDelegate?`<br /> The object that acts as the delegate of the flexible AV capture view.
 |Managing Capture Settings |`var allowsResizing: Bool`<br /> A Boolean value that indicates whether users can resize camera frame. Allowing this feature hides a resizing slider and resizing buttons. The default value of this property is **true**.
 |                          |`var allowsReversingCamera: Bool`<br /> A Boolean value that indicates whether users can make the camera position reversed. Allowing this feature hides a camera-reversing button. The default value of this property is **true**.
 |                          |`var cameraPosition: AVCaptureDevice.Position`<br /> The camera position being used to capture video. Back camera will be used by default. (This is a get-only property.)

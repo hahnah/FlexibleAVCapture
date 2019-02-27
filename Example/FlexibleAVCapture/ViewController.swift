@@ -9,7 +9,7 @@ import UIKit
 import FlexibleAVCapture
 import Photos
 
-class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate {
+class ViewController: UIViewController, FlexibleAVCaptureDelegate {
     
     let flexibleAVCaptureVC: FlexibleAVCaptureViewController = FlexibleAVCaptureViewController(cameraPosition: .back)
 
@@ -20,7 +20,7 @@ class ViewController: UIViewController, FlexibleAVCaptureViewControllerDelegate 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        self.flexibleAVCaptureVC.flexibleCaptureDelegate = self
+        self.flexibleAVCaptureVC.delegate = self
         
         self.flexibleAVCaptureVC.maximumRecordDuration = CMTimeMake(value: 60, timescale: 1)
         self.flexibleAVCaptureVC.minimumFrameRatio = 0.16

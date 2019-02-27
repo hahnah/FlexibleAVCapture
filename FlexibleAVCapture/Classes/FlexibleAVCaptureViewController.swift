@@ -11,7 +11,7 @@ import Photos
 
 public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     
-    public var flexibleCaptureDelegate: FlexibleAVCaptureViewControllerDelegate? = nil
+    public var delegate: FlexibleAVCaptureDelegate? = nil
     public var maximumRecordDuration: CMTime {
         get {
             return self.maximumRecordDuration_
@@ -356,7 +356,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
                     self.recordButton.isEnabled = true
                     self.enableOperatableUIs()
                     self.saveSliderValue()
-                    self.flexibleCaptureDelegate?.didCapture(withFileURL: reoutputFileURL)
+                    self.delegate?.didCapture(withFileURL: reoutputFileURL)
                 }
         })
         
