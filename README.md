@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/FlexibleAVCapture.svg?style=flat)](https://cocoapods.org/pods/FlexibleAVCapture)
 [![Platform](https://img.shields.io/cocoapods/p/FlexibleAVCapture.svg?style=flat)](https://cocoapods.org/pods/FlexibleAVCapture)
 
-This pod provides a kind of AV capture view controller with flexible camera frame. It includes default capture settings, preview layer, buttons, tap-gesture focus, pinch-gesture, and so on.
+This pod provides a kind of AV capture view controller with flexible camera frame. It includes default capture settings, preview layer, buttons, tap-gesture focusing, pinch-gesture zooming, and so on.
 
 ## Screen Capture
 
@@ -56,7 +56,7 @@ class ViewController: UIViewController, FlexibleAVCaptureDelegate {
 
 ## API
 
-### class FlexibleAVCaptureViewController
+### FlexibleAVCaptureViewController
 
 An object that manages capture settings and a session. It also displays a preview layer and handles user interactions.
 
@@ -83,7 +83,7 @@ An object that manages capture settings and a session. It also displays a previe
 |                          |`func replaceTallFramingButton(with button: UIButton) -> Void`<br /> Replace the existing tall-framing button.
 |                          |`func replaceWideFramingButton(with button: UIButton) -> Void`<br /> Replace the existing wide-framing button.
 
-### protocol FlexibleAVCaptureDelegate
+### FlexibleAVCaptureDelegate
 
 Defines an interface for delegates of FlexibleAVCaptureViewController to respond to events that occur in the process of recording a single file.  
 The delegate of an FlexibleAVCaptureViewController object must adopt the FlexibleAVCaptureDelegate protocol.
