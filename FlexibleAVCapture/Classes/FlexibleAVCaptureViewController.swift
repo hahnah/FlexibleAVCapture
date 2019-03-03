@@ -296,6 +296,8 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
                                     1.0 / 3.0,
                                     2.0 / 3.0,
                                     1.0]
+    private let soundIDForBeginVideoRecording: SystemSoundID = 1117
+    private let soundIDForEndVideoRecording: SystemSoundID = 1118
     
     // support only portrait so far (v1.0.0)
     override public var shouldAutorotate: Bool {
@@ -612,11 +614,17 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         }
         
         if captureOutput.isRecording {
+            // ring sound
+            AudioServicesPlaySystemSound(self.soundIDForEndVideoRecording)
+            
             // stop recording
             self.recordButton.isEnabled = false
             self.recordButton.isSelected = false
             captureOutput.stopRecording()
         } else {
+            // ring sound
+            AudioServicesPlaySystemSound(self.soundIDForBeginVideoRecording)
+            
             // start recording
             let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
