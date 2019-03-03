@@ -77,6 +77,14 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             }
         }
     }
+    public var allowsSoundEffect: Bool {
+        get {
+            return self.allowsSoundEffect_
+        }
+        set(ifAllowed) {
+            self.allowsSoundEffect_ = ifAllowed
+        }
+    }
     
     public init() {
         super.init(nibName: nil, bundle: nil)
@@ -263,6 +271,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private var minimumFrameRatio_: CGFloat = 0.34
     private var allowsResizing_: Bool = true
     private var allowsReversingCamera_: Bool = true
+    private var allowsSoundEffect_: Bool = true
     private var videoQuality_: AVCaptureSession.Preset = .medium
     
     private var captureSession: AVCaptureSession? = nil
@@ -615,7 +624,9 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         
         if captureOutput.isRecording {
             // ring sound
-            AudioServicesPlaySystemSound(self.soundIDForEndVideoRecording)
+            if self.allowsSoundEffect {
+                AudioServicesPlaySystemSound(self.soundIDForEndVideoRecording)
+            }
             
             // stop recording
             self.recordButton.isEnabled = false
@@ -623,7 +634,9 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
             captureOutput.stopRecording()
         } else {
             // ring sound
-            AudioServicesPlaySystemSound(self.soundIDForBeginVideoRecording)
+            if self.allowsSoundEffect {
+                AudioServicesPlaySystemSound(self.soundIDForBeginVideoRecording)
+            }
             
             // start recording
             let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
