@@ -9,7 +9,7 @@ import UIKit
 import AVFoundation
 import Photos
 
-public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
+open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     
     public var delegate: FlexibleAVCaptureDelegate? = nil
     public var maximumRecordDuration: CMTime {
@@ -98,7 +98,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.setupCaptureSession(withPosition: self.cameraPosition, withQuality: self.videoQuality)
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -309,18 +309,18 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
     private let soundIDForEndVideoRecording: SystemSoundID = 1118
     
     // support only portrait so far (v1.0.0)
-    override public var shouldAutorotate: Bool {
+    override open var shouldAutorotate: Bool {
         get {
             return false
         }
     }
-    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         get {
             return .portrait
         }
     }
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.black
         self.setupPreviewLayer()
@@ -330,7 +330,7 @@ public class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOut
         self.setupTapGestureRecognizer()
     }
     
-    override public func viewDidDisappear(_ animated: Bool) {
+    override open func viewDidDisappear(_ animated: Bool) {
         self.captureSession?.stopRunning()
         self.captureSession?.inputs.forEach { input in
             self.captureSession?.removeInput(input)
