@@ -17,7 +17,7 @@ class CameraViewController: FlexibleAVCaptureViewController, FlexibleAVCaptureDe
             DispatchQueue.main.async {
                 let success = saved && (error == nil)
                 let title = success ? "Success" : "Error"
-                let message = success ? "Movie saved." : "Failed to save movie."
+                let message = success ? "Video saved." : "Failed to save movie."
                 let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
                 self.present(alert, animated: true, completion: nil)
