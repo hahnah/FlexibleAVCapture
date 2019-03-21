@@ -641,7 +641,9 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             // start recording
             let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
-            captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
+            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { _ in
+                captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
+            })
             
             self.recordButton.isSelected = true
             self.disableOperatableUIs()
