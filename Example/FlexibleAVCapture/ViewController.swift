@@ -18,6 +18,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        DispatchQueue.main.async {
             let cameraViewController: CameraViewController = CameraViewController(cameraPosition: .back)
             cameraViewController.delegate = cameraViewController
             
@@ -28,6 +29,7 @@ class ViewController: UIViewController {
             }
             
             self.present(cameraViewController, animated: true, completion: nil)
+        }
     }
 
     override func didReceiveMemoryWarning() {
