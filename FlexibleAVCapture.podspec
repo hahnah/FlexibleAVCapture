@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.screenshots      = 'https://raw.githubusercontent.com/hahnah/FlexibleAVCapture/master/screencapture.gif'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'hahnah' => 'superhahnah@gmail.com' }
-  s.source           = { :git => 'https://github.com/hahnah/FlexibleAVCapture.git', :tag => '2.1.0' }
+  s.source           = { :git => 'https://github.com/hahnah/FlexibleAVCapture.git', :tag => '2.2.0' }
   s.social_media_url = 'https://twitter.com/superhahnah'
 
   s.ios.deployment_target = '11.0'
