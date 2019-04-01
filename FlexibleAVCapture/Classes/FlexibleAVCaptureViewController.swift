@@ -622,20 +622,22 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             return
         }
         
-        // avoid double tap
-        sender.isEnabled = false
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { _ in
-            sender.isEnabled = true
-        })
-        
         if captureOutput.isRecording {
             // ring sound
             if self.allowsSoundEffect {
                 AudioServicesPlaySystemSound(self.soundIDForEndVideoRecording)
             }
             
-            // stop recording
+            // animate button and avoid double tap
+            self.recordButton.alpha = 0.1
             self.recordButton.isEnabled = false
+            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseOut, animations: {
+                self.recordButton.alpha = 1.0
+            }, completion: {(isCompleted) in
+                self.recordButton.isEnabled = true
+            })
+            
+            // stop recording
             self.recordButton.isSelected = false
             captureOutput.stopRecording()
         } else {
@@ -644,10 +646,17 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                 AudioServicesPlaySystemSound(self.soundIDForBeginVideoRecording)
             }
             
-            // start recording
             let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
-            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { _ in
+     
+            // animate button and avoid double tap
+            sender.alpha = 0.1
+            sender.isEnabled = false
+            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseOut, animations: {
+                sender.alpha = 1.0
+            }, completion: {(isCompleted) in
+                sender.isEnabled = true
+                // start recording
                 captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             })
             
