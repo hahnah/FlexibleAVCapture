@@ -622,6 +622,12 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             return
         }
         
+        // avoid double tap
+        sender.isEnabled = false
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false, block: { _ in
+            sender.isEnabled = true
+        })
+        
         if captureOutput.isRecording {
             // ring sound
             if self.allowsSoundEffect {
