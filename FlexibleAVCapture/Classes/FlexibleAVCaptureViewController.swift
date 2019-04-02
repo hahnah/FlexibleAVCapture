@@ -293,6 +293,8 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     private var reservedButtonForTallFrame: UIButton? = nil
     private var reservedRecordButton: UIButton? = nil
     private var reservedReverseButton: UIButton? = nil
+    private var indicatorView: UIView = UIView()
+    private var indicator: UIActivityIndicatorView = UIActivityIndicatorView()
     private var isSliderReserved: Bool = false
     private var isButtonForFullFrameReserved: Bool = false
     private var isButtonForSquareFrameReserved: Bool = false
@@ -328,6 +330,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.applyPresetPreviewFrame()
         self.setupPinchGestureRecognizer()
         self.setupTapGestureRecognizer()
+        self.setupIndicatorView()
     }
     
     override open func viewDidDisappear(_ animated: Bool) {
@@ -368,6 +371,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                     self.enableOperatableUIs()
                     self.saveSliderValue()
                     self.delegate?.didCapture(withFileURL: reoutputFileURL)
+                    self.dismissIndicatorView()
                 }
         })
         
@@ -548,6 +552,14 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.view.addGestureRecognizer(tapGestureRecognizer)
     }
     
+    private func setupIndicatorView() {
+        self.indicator = UIActivityIndicatorView(style: .whiteLarge)
+        self.indicator.center = self.view.center
+        self.indicatorView = UIView(frame: self.view.frame)
+        self.indicatorView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        self.indicatorView.addSubview(self.indicator)
+    }
+    
     @objc private func onSliderChanged(sender: UISlider) {
         self.previewLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
     }
@@ -640,6 +652,9 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             // stop recording
             self.recordButton.isSelected = false
             captureOutput.stopRecording()
+            
+            // show indicator
+            self.showIndicatorView()
         } else {
             // ring sound
             if self.allowsSoundEffect {
@@ -804,5 +819,15 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         } catch let error as NSError {
             print(error.debugDescription)
         }
+    }
+    
+    private func showIndicatorView() {
+        self.view.addSubview(self.indicatorView)
+        self.indicator.startAnimating()
+    }
+    
+    private func dismissIndicatorView() {
+        self.indicator.stopAnimating()
+        self.indicatorView.removeFromSuperview()
     }
 }
