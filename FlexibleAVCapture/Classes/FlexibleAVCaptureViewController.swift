@@ -333,14 +333,15 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.setupIndicatorView()
     }
     
+    override open func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if !(self.captureSession?.isRunning ?? false) {
+            self.captureSession?.startRunning()
+        }
+    }
+    
     override open func viewDidDisappear(_ animated: Bool) {
         self.captureSession?.stopRunning()
-        self.captureSession?.inputs.forEach { input in
-            self.captureSession?.removeInput(input)
-        }
-        self.captureSession?.outputs.forEach { output in
-            self.captureSession?.removeOutput(output)
-        }
     }
     
     public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
