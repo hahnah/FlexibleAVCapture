@@ -310,7 +310,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     private let soundIDForBeginVideoRecording: SystemSoundID = 1117
     private let soundIDForEndVideoRecording: SystemSoundID = 1118
     
-    // support only portrait so far (v1.0.0)
+    // support only portrait so far
     override open var shouldAutorotate: Bool {
         get {
             return false
