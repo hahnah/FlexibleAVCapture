@@ -303,6 +303,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     private var isRecordButtonReserved: Bool = false
     private var isReverseButtonReserved: Bool = false
     private var isVideoSaved: Bool = false
+    private var isAppOnForeground: Bool = true
     private let boundaries: Array<Float> = [0.0,
                                     1.0 / 3.0,
                                     2.0 / 3.0,
@@ -331,6 +332,8 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.setupPinchGestureRecognizer()
         self.setupTapGestureRecognizer()
         self.setupIndicatorView()
+        self.setupForegroundObserver()
+        self.setupBackgroundObserver()
     }
     
     override open func viewWillAppear(_ animated: Bool) {
@@ -352,6 +355,9 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     }
     
     public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        guard self.isAppOnForeground else {
+            return
+        }
         
         let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
         let reoutputFileURL: URL = tempDirectory.appendingPathComponent("mytemp.mov")
@@ -561,6 +567,14 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.indicatorView.addSubview(self.indicator)
     }
     
+    private func setupForegroundObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+    
+    private func setupBackgroundObserver() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+    }
+    
     @objc private func onSliderChanged(sender: UISlider) {
         self.previewLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
     }
@@ -683,6 +697,24 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     
     @objc private func onTapReverseButton(sender: UIButton) {
         self.reverseCameraPosition()
+    }
+    
+    @objc private func willEnterForeground() {
+        self.isAppOnForeground = true
+        self.captureSession?.startRunning()
+    }
+    
+    @objc private func didEnterBackground() {
+        self.isAppOnForeground = false
+        if let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput {
+            if captureOutput.isRecording {
+                captureOutput.stopRecording()
+                self.recordButton.isEnabled = true
+                self.recordButton.isSelected = false
+                self.enableOperatableUIs()
+            }
+        }
+        self.captureSession?.stopRunning()
     }
     
     private func getPresetPreviewFrame() -> CGRect {
