@@ -302,7 +302,6 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     private var isButtonForTallFrameReserved: Bool = false
     private var isRecordButtonReserved: Bool = false
     private var isReverseButtonReserved: Bool = false
-    private var isVideoSaved: Bool = false
     private var isAppOnForeground: Bool = true
     private let boundaries: Array<Float> = [0.0,
                                     1.0 / 3.0,
@@ -373,7 +372,6 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             croppingRect: croppingRect,
             complition: {
                 DispatchQueue.main.async {
-                    self.isVideoSaved = false
                     self.recordButton.isEnabled = true
                     self.enableOperatableUIs()
                     self.saveSliderValue()
