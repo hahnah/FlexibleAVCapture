@@ -654,9 +654,9 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             }
             
             // animate button and avoid double tap
-            self.recordButton.alpha = 0.1
+            self.recordButton.alpha = 0.3
             self.recordButton.isEnabled = false
-            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseOut, animations: {
+            UIView.animate(withDuration: 0.35, delay: 0.1, options: .curveEaseOut, animations: {
                 self.recordButton.alpha = 1.0
             }, completion: {(isCompleted) in
                 self.recordButton.isEnabled = true
@@ -678,9 +678,9 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
      
             // animate button and avoid double tap
-            sender.alpha = 0.1
+            sender.alpha = 0.3
             sender.isEnabled = false
-            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseOut, animations: {
+            UIView.animate(withDuration: 0.35, delay: 0.1, options: .curveEaseOut, animations: {
                 sender.alpha = 1.0
             }, completion: {(isCompleted) in
                 sender.isEnabled = true
