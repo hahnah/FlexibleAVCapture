@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'FlexibleAVCapture'
-  s.version          = '2.2.4'
+  s.version          = '2.2.6'
   s.summary          = 'Provides a kind of AV capture view controller with flexible camera frame.'
 
 # This description is used to generate tags and improve search results.
@@ -23,11 +23,11 @@ Pod::Spec.new do |s|
   s.screenshots      = 'https://raw.githubusercontent.com/hahnah/FlexibleAVCapture/master/screencapture.gif'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'hahnah' => 'superhahnah@gmail.com' }
-  s.source           = { :git => 'https://github.com/hahnah/FlexibleAVCapture.git', :tag => '2.2.4' }
+  s.source           = { :git => 'https://github.com/hahnah/FlexibleAVCapture.git', :tag => '2.2.6' }
   s.social_media_url = 'https://twitter.com/superhahnah'
 
-  s.ios.deployment_target = '11.0'
-  s.swift_version = '5.0'
+  s.platform = :ios, '18.0'
+  s.swift_version = '6.0'
 
   s.source_files = 'FlexibleAVCapture/Classes/**/*'
   

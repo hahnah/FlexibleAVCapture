@@ -8,24 +8,26 @@
 import UIKit
 import AVFoundation
 import Photos
+import AudioToolbox
 
 open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
+    public var maximumRecordFileSize: Int64 = 0 // 0 = 無制限
+    public var minimumFreeDiskSpaceLimit: Int64 = 50 * 1024 * 1024 // 任意の安全マージン
+    private func applyOutputLimits() {
+        guard let m = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else { return }
+        m.maxRecordedDuration = self.maximumRecordDuration_
+        m.maxRecordedFileSize = self.maximumRecordFileSize
+        m.minFreeDiskSpaceLimit = self.minimumFreeDiskSpaceLimit
+    }
     
     public var delegate: FlexibleAVCaptureDelegate? = nil
     public var maximumRecordDuration: CMTime {
-        get {
-            return self.maximumRecordDuration_
-        }
+        get { return self.maximumRecordDuration_ }
         set(newMaxRecordDuration) {
-            guard !((self.captureSession?.outputs.first as? AVCaptureMovieFileOutput)?.isRecording ?? true) else {
-                debugPrint("Failed to set maximumRecordDuration, because the capture session is still running or there is no capture session.")
-                return
-            }
-            if let movieOutput = (self.captureSession?.outputs.first as! AVCaptureMovieFileOutput?) {
+            self.maximumRecordDuration_ = newMaxRecordDuration
+            if let movieOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput,
+               movieOutput.isRecording == false {
                 movieOutput.maxRecordedDuration = newMaxRecordDuration
-                self.maximumRecordDuration_ = movieOutput.maxRecordedDuration
-            } else {
-                debugPrint("Failed to set maximumRecordDuration for " + newMaxRecordDuration.seconds.debugDescription + " seconds.")
             }
         }
     }
@@ -169,6 +171,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             debugPrint("Failed to set videoQuality to " + videoQuality.rawValue + ".")
         }
         self.captureSession?.commitConfiguration()
+        self.applyOutputLimits()
     }
     
     public func replaceFullFramingButton(with button: UIButton) {
@@ -346,31 +349,47 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.captureSession?.stopRunning()
     }
     
-    public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
-        /* NOTE: For better response of "Record" button's changing to "●Recording", do not call these two functions here:
-         *          - self.recordButton.isSelected = true
-         *          - self.disableOperatableUIs()
-         */
+    nonisolated public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
+        Task { @MainActor in
+        }
     }
     
-    public func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-        guard self.isAppOnForeground else {
-            return
+    nonisolated public func fileOutput(_ output: AVCaptureFileOutput,
+                                       didFinishRecordingTo outputFileURL: URL,
+                                       from connections: [AVCaptureConnection],
+                                       error: Error?) {
+        Task { @MainActor in
+            self.handleDidFinishRecording(outputURL: outputFileURL, error: error)
         }
-        
-        let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
-        let reoutputFileURL: URL = tempDirectory.appendingPathComponent("mytemp.mov")
-        
-        let tempVideoTrack: AVAssetTrack = AVAsset(url: outputFileURL).tracks(withMediaType: AVMediaType.video)[0]
-        let (orientation, _): (UIImage.Orientation, Bool) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
-        let croppingRect: CGRect = self.calculateCroppingRect(originalMovieSize: tempVideoTrack.naturalSize, orientation: orientation, previewFrameRect: (self.previewLayer?.bounds)!, fullFrameRect: self.view.bounds)
-        
+    }
+
+    @MainActor
+    private func handleDidFinishRecording(outputURL: URL, error: Error?) {
+        guard self.isAppOnForeground else { return }
+
+        if let e = error {
+            debugPrint("[FlexibleAVCapture] didFinishRecording error:", e)
+        }
+
+        let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
+        let reoutputFileURL = tempDirectory.appendingPathComponent("mytemp.mov")
+
+        let tempVideoTrack = AVAsset(url: outputURL).tracks(withMediaType: .video)[0]
+        let (orientation, _) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
+        let croppingRect = self.calculateCroppingRect(
+            originalMovieSize: tempVideoTrack.naturalSize,
+            orientation: orientation,
+            previewFrameRect: (self.previewLayer?.bounds)!,
+            fullFrameRect: self.view.bounds
+        )
+
         self.cropMovie(
-            sourceURL: outputFileURL,
+            sourceURL: outputURL,
             destinationURL: reoutputFileURL,
-            fileType: AVFileType.mov,
+            fileType: .mov,
             croppingRect: croppingRect,
-            complition: {
+            complition: { [weak self] in
+                guard let self else { return }
                 DispatchQueue.main.async {
                     self.recordButton.isEnabled = true
                     self.enableOperatableUIs()
@@ -378,34 +397,32 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                     self.delegate?.didCapture(withFileURL: reoutputFileURL)
                     self.dismissIndicatorView()
                 }
-        })
-        
+            }
+        )
     }
     
     private func setupCaptureSession(withPosition cameraPosition: AVCaptureDevice.Position, withQuality videoQuality: AVCaptureSession.Preset) {
-        self.videoDevice = AVCaptureDevice.default(AVCaptureDevice.DeviceType.builtInWideAngleCamera, for: AVMediaType.video, position: cameraPosition)
-        let audioDevice = AVCaptureDevice.default(for: AVMediaType.audio)
-        
+        self.videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition)
+        let audioDevice = AVCaptureDevice.default(for: .audio)
+
         self.captureSession = AVCaptureSession()
-        
-        // add video input to a capture session
+
         let videoInput = try! AVCaptureDeviceInput(device: self.videoDevice!)
         self.captureSession?.addInput(videoInput)
-        
-        // add audio input to a capture session
+
         let audioInput = try! AVCaptureDeviceInput(device: audioDevice!)
         self.captureSession?.addInput(audioInput)
-        
-        // add capture output
-        let captureOutput: AVCaptureMovieFileOutput = AVCaptureMovieFileOutput()
-        captureOutput.maxRecordedDuration = self.maximumRecordDuration
+
+        let captureOutput = AVCaptureMovieFileOutput()
         self.captureSession?.addOutput(captureOutput)
-        
-        // video quality setting
+
+        self.applyOutputLimits()
+
         if self.canSetVideoQuality(videoQuality) {
             self.setVideoQuality(videoQuality)
+            self.applyOutputLimits()
         }
-        
+
         self.captureSession?.startRunning()
     }
     
@@ -558,7 +575,12 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     }
     
     private func setupIndicatorView() {
-        self.indicator = UIActivityIndicatorView(style: .whiteLarge)
+        if #available(iOS 13.0, *) {
+            self.indicator = UIActivityIndicatorView(style: .large)
+            self.indicator.color = .white
+        } else {
+            self.indicator = UIActivityIndicatorView(style: .whiteLarge)
+        }
         self.indicator.center = self.view.center
         self.indicatorView = UIView(frame: self.view.frame)
         self.indicatorView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
@@ -684,6 +706,11 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                 sender.alpha = 1.0
             }, completion: {(isCompleted) in
                 sender.isEnabled = true
+
+                let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
+                let tempFileURL   = tempDirectory.appendingPathComponent("temp.mov")
+                try? FileManager.default.removeItem(at: tempFileURL)
+
                 // start recording
                 captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             })

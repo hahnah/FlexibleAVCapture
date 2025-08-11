@@ -22,6 +22,7 @@ class ViewController: UIViewController {
             let cameraViewController: CameraViewController = CameraViewController(cameraPosition: .back)
             cameraViewController.delegate = cameraViewController
             
+            cameraViewController.modalPresentationStyle = .fullScreen
             cameraViewController.maximumRecordDuration = CMTimeMake(value: 60, timescale: 1)
             cameraViewController.minimumFrameRatio = 0.16
             if cameraViewController.canSetVideoQuality(.high) {

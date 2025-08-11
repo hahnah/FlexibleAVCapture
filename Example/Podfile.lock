@@ -1,16 +1,16 @@
 PODS:
-  - FlexibleAVCapture (0.1.0)
+  - FlexibleAVCapture (2.2.6)
 
 DEPENDENCIES:
   - FlexibleAVCapture (from `../`)
 
 EXTERNAL SOURCES:
   FlexibleAVCapture:
-    :path: ../
+    :path: "../"
 
 SPEC CHECKSUMS:
-  FlexibleAVCapture: 1673d83bc124bdc5f2315bde6fa7da3436bd1832
+  FlexibleAVCapture: 15ecca8d9495f3fac81308f3ad7fadf4722a5fe1
 
 PODFILE CHECKSUM: 6e243abbc7afbe45a83be317014a0193fd4d5aa4
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.16.2
