@@ -661,7 +661,11 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             })
         })
         
-        self.focusWithMode(focusMode: .autoFocus, exposeWithMode: .autoExpose, atDevicePoint: tapCGPoint, motiorSubjectAreaChange: true)
+        // Convert tap point to normalized device coordinates
+        guard let previewLayer = self.previewLayer else { return }
+        let devicePoint = previewLayer.captureDevicePointConverted(fromLayerPoint: tapCGPoint)
+        
+        self.focusWithMode(focusMode: .autoFocus, exposeWithMode: .autoExpose, atDevicePoint: devicePoint, motiorSubjectAreaChange: true)
     }
     
     @objc private func onTapRecordButton(sender: UIButton) {

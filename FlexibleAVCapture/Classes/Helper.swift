@@ -107,9 +107,20 @@ extension FlexibleAVCaptureViewController {
             let needToSwap: Bool = isPortrait(orientation: movieOrientation)
             let intendedMovieSize: CGSize = needToSwap ? CGSize(width: movieSize.height, height: movieSize.width) : movieSize
             let protrudedSize: ProtrudedSize = calculateProtrudedSize(originalSize: intendedMovieSize, boundingSize: fullFrameRect)
-            let intendedCroppingSize: CGSize = CGSize(
-                width: widthPercentage * (intendedMovieSize.width - 2 * protrudedSize.halfOfWidth),
-                height: intendedMovieSize.height)
+            
+            // For full frame in portrait, use the entire preview area without additional cropping
+            let intendedCroppingSize: CGSize
+            if widthPercentage == 1.0 && heightPercentage == 1.0 {
+                // Full frame case - use entire movie size minus any protruded areas
+                intendedCroppingSize = CGSize(
+                    width: max(intendedMovieSize.width - 2 * protrudedSize.halfOfWidth, intendedMovieSize.width * widthPercentage),
+                    height: max(intendedMovieSize.height - 2 * protrudedSize.halfOfHeight, intendedMovieSize.height * heightPercentage))
+            } else {
+                intendedCroppingSize = CGSize(
+                    width: widthPercentage * (intendedMovieSize.width - 2 * protrudedSize.halfOfWidth),
+                    height: intendedMovieSize.height)
+            }
+            
             let croppingSize: CGSize = needToSwap ? CGSize(width: intendedCroppingSize.height, height: intendedCroppingSize.width) : intendedCroppingSize
             let croppingPoint: CGPoint = CGPoint(
                 x: (movieSize.width - croppingSize.width) / 2.0,
@@ -124,16 +135,29 @@ extension FlexibleAVCaptureViewController {
         let movieAspectRatio: CGFloat = originalSize.height / originalSize.width
         let boundingAspectRatio: CGFloat = boundingSize.height / boundingSize.width
         var protrudedSize: ProtrudedSize = ProtrudedSize()
-        if movieAspectRatio < boundingAspectRatio { // e.g. iPhone X or later
+        
+        // For resizeAspectFill behavior, we need to scale to fit the larger dimension
+        // and calculate protruded areas based on which dimension is constrained
+        if movieAspectRatio < boundingAspectRatio {
+            // Video is wider than frame - scale to fit height, crop width
             let scale: CGFloat = boundingSize.height / originalSize.height
             let scaledWidth: CGFloat = originalSize.width * scale
-            let scaledProtrudedWidth: CGFloat = scaledWidth - boundingSize.width
-            protrudedSize.halfOfWidth = scaledProtrudedWidth * 0.5 / scale
+            if scaledWidth > boundingSize.width {
+                let scaledProtrudedWidth: CGFloat = scaledWidth - boundingSize.width
+                protrudedSize.halfOfWidth = scaledProtrudedWidth * 0.5 / scale
+            }
             protrudedSize.halfOfHeight = 0.0
-        } else if movieAspectRatio > boundingAspectRatio { // e.g. iPad series
+        } else if movieAspectRatio > boundingAspectRatio {
+            // Video is taller than frame - scale to fit width, crop height
+            let scale: CGFloat = boundingSize.width / originalSize.width
+            let scaledHeight: CGFloat = originalSize.height * scale
             protrudedSize.halfOfWidth = 0.0
-            protrudedSize.halfOfHeight = (originalSize.height - originalSize.width * boundingAspectRatio) * 0.5
-        } else { // In other words, movieAspectRatio == frameAspectRatio. e.g. iPhone 6s - 8 Plus
+            if scaledHeight > boundingSize.height {
+                let scaledProtrudedHeight: CGFloat = scaledHeight - boundingSize.height
+                protrudedSize.halfOfHeight = scaledProtrudedHeight * 0.5 / scale
+            }
+        } else {
+            // Same aspect ratio - no cropping needed
             protrudedSize.halfOfWidth = 0.0
             protrudedSize.halfOfHeight = 0.0
         }
