@@ -95,7 +95,7 @@ The delegate of an FlexibleAVCaptureViewController object must adopt the Flexibl
 
 ## Author
 
-hahnah, superhahnah@gmail.com
+hahnah (Natsuki Harai), hahnah.gg@gmail.com
 
 ## License
 
