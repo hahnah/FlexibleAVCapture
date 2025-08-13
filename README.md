@@ -71,7 +71,7 @@ An object that manages capture settings and a session. It also displays a previe
 |                          |`var cameraPosition: AVCaptureDevice.Position`<br /> The camera position being used to capture video. Back camera will be used by default. (This is a get-only property.)
 |                          |`var maximumRecordDuration: CMTime`<br /> The longest duration allowed for the recording. The default value of this property is **invalid**, which indicates no limit.
 |                          |`var minimumFrameRatio: CGFloat`<br /> The ratio of the vertical(or horizontal) edge length in the full frame when the wideset(or tallest) frame is applied. The default value of this property is **0.34**.
-|                          |`var videoQuality: AVCaptureSession.Preset`<br /> A constant value indicating the quality level or bit rate of the output. The default value of this property is **medium**. (This is a get-only property.)
+|                          |`var videoQuality: AVCaptureSession.Preset`<br /> A constant value indicating the quality level or bit rate of the output. The default value of this property is **high**. (This is a get-only property.)
 |                          |`func canSetVideoQuality(_ videoQuality: AVCaptureSession.Preset) -> Bool`<br /> Returns a Boolean value that indicates whether the receiver can use the given preset.
 |                          |`func forceResize(withResizingParameter resizingParameter: Float) -> Void`<br /> Recieve a Float value between 0.0 and 1.0 and resize the camera frame using the value.
 |                          |`func reverseCameraPosition() -> Void`<br /> Change the camera position to the oppsite of the current position.

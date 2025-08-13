@@ -60,7 +60,7 @@ extension FlexibleAVCaptureViewController {
             croppedVideoComposition?.renderSize = CGSize(width: needToSwap ? _croppingRect.height : _croppingRect.width, height: needToSwap ? _croppingRect.width : _croppingRect.height)
         }
         
-        let assetExport = AVAssetExportSession.init(asset: mixComposition, presetName: AVAssetExportPresetMediumQuality)
+        let assetExport = AVAssetExportSession.init(asset: mixComposition, presetName: self.exportQuality)
         assetExport?.outputFileType = fileType
         assetExport?.outputURL = destinationURL
         if let videoComposition = croppedVideoComposition {

@@ -13,6 +13,7 @@ import AudioToolbox
 open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutputRecordingDelegate {
     public var maximumRecordFileSize: Int64 = 0 // 0 = 無制限
     public var minimumFreeDiskSpaceLimit: Int64 = 50 * 1024 * 1024 // 任意の安全マージン
+    public var exportQuality: String = AVAssetExportPresetHighestQuality
     private func applyOutputLimits() {
         guard let m = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else { return }
         m.maxRecordedDuration = self.maximumRecordDuration_
@@ -275,7 +276,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     private var allowsResizing_: Bool = true
     private var allowsReversingCamera_: Bool = true
     private var allowsSoundEffect_: Bool = true
-    private var videoQuality_: AVCaptureSession.Preset = .medium
+    private var videoQuality_: AVCaptureSession.Preset = .high
     
     private var captureSession: AVCaptureSession? = nil
     private var videoDevice: AVCaptureDevice?
