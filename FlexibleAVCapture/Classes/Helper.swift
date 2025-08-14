@@ -87,6 +87,14 @@ extension FlexibleAVCaptureViewController {
         let isFullyWide: Bool = widthPercentage == 1.0 ? true : false
         let isFullyTall: Bool = heightPercentage == 1.0 ? true : false
         
+        // Check if this is the full frame (both dimensions match fullFrameRect)
+        let isFullFrame: Bool = (previewFrameRect.width == fullFrameRect.width && previewFrameRect.height == fullFrameRect.height)
+        
+        // For full frame with 4:3 aspect ratio, return full movie size without cropping
+        if isFullFrame {
+            return CGRect(origin: .zero, size: movieSize)
+        }
+        
         // PREMISE: At least one of widthPercentage and heightPercentage is 1.0.
         guard isFullyWide || isFullyTall else {
             return CGRect(origin: .zero, size: movieSize)
@@ -108,18 +116,10 @@ extension FlexibleAVCaptureViewController {
             let intendedMovieSize: CGSize = needToSwap ? CGSize(width: movieSize.height, height: movieSize.width) : movieSize
             let protrudedSize: ProtrudedSize = calculateProtrudedSize(originalSize: intendedMovieSize, boundingSize: fullFrameRect)
             
-            // For full frame in portrait, use the entire preview area without additional cropping
-            let intendedCroppingSize: CGSize
-            if widthPercentage == 1.0 && heightPercentage == 1.0 {
-                // Full frame case - use entire movie size minus any protruded areas
-                intendedCroppingSize = CGSize(
-                    width: max(intendedMovieSize.width - 2 * protrudedSize.halfOfWidth, intendedMovieSize.width * widthPercentage),
-                    height: max(intendedMovieSize.height - 2 * protrudedSize.halfOfHeight, intendedMovieSize.height * heightPercentage))
-            } else {
-                intendedCroppingSize = CGSize(
-                    width: widthPercentage * (intendedMovieSize.width - 2 * protrudedSize.halfOfWidth),
-                    height: intendedMovieSize.height)
-            }
+            // For partial width frames (Square, Tall), crop based on width percentage
+            let intendedCroppingSize: CGSize = CGSize(
+                width: widthPercentage * (intendedMovieSize.width - 2 * protrudedSize.halfOfWidth),
+                height: intendedMovieSize.height)
             
             let croppingSize: CGSize = needToSwap ? CGSize(width: intendedCroppingSize.height, height: intendedCroppingSize.width) : intendedCroppingSize
             let croppingPoint: CGPoint = CGPoint(
