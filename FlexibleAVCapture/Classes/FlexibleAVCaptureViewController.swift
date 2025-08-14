@@ -14,22 +14,12 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     public var maximumRecordFileSize: Int64 = 0 // 0 = 無制限
     public var minimumFreeDiskSpaceLimit: Int64 = 50 * 1024 * 1024 // 任意の安全マージン
     public var exportQuality: String = AVAssetExportPresetHighestQuality
-    private func applyOutputLimits() {
-        guard let m = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else { return }
-        m.maxRecordedDuration = self.maximumRecordDuration_
-        m.maxRecordedFileSize = self.maximumRecordFileSize
-        m.minFreeDiskSpaceLimit = self.minimumFreeDiskSpaceLimit
-    }
     
     public var delegate: FlexibleAVCaptureDelegate? = nil
     public var maximumRecordDuration: CMTime {
         get { return self.maximumRecordDuration_ }
         set(newMaxRecordDuration) {
             self.maximumRecordDuration_ = newMaxRecordDuration
-            if let movieOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput,
-               movieOutput.isRecording == false {
-                movieOutput.maxRecordedDuration = newMaxRecordDuration
-            }
         }
     }
     public var cameraPosition: AVCaptureDevice.Position {
@@ -172,7 +162,6 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             debugPrint("Failed to set videoQuality to " + videoQuality.rawValue + ".")
         }
         self.captureSession?.commitConfiguration()
-        self.applyOutputLimits()
     }
     
     public func replaceFullFramingButton(with button: UIButton) {
@@ -350,57 +339,6 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.captureSession?.stopRunning()
     }
     
-    nonisolated public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
-        Task { @MainActor in
-        }
-    }
-    
-    nonisolated public func fileOutput(_ output: AVCaptureFileOutput,
-                                       didFinishRecordingTo outputFileURL: URL,
-                                       from connections: [AVCaptureConnection],
-                                       error: Error?) {
-        Task { @MainActor in
-            self.handleDidFinishRecording(outputURL: outputFileURL, error: error)
-        }
-    }
-
-    @MainActor
-    private func handleDidFinishRecording(outputURL: URL, error: Error?) {
-        guard self.isAppOnForeground else { return }
-
-        if let e = error {
-            debugPrint("[FlexibleAVCapture] didFinishRecording error:", e)
-        }
-
-        let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
-        let reoutputFileURL = tempDirectory.appendingPathComponent("mytemp.mov")
-
-        let tempVideoTrack = AVAsset(url: outputURL).tracks(withMediaType: .video)[0]
-        let (orientation, _) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
-        let croppingRect = self.calculateCroppingRect(
-            originalMovieSize: tempVideoTrack.naturalSize,
-            orientation: orientation,
-            previewFrameRect: (self.previewLayer?.bounds)!,
-            fullFrameRect: self.view.bounds
-        )
-
-        self.cropMovie(
-            sourceURL: outputURL,
-            destinationURL: reoutputFileURL,
-            fileType: .mov,
-            croppingRect: croppingRect,
-            complition: { [weak self] in
-                guard let self else { return }
-                DispatchQueue.main.async {
-                    self.recordButton.isEnabled = true
-                    self.enableOperatableUIs()
-                    self.saveSliderValue()
-                    self.delegate?.didCapture(withFileURL: reoutputFileURL)
-                    self.dismissIndicatorView()
-                }
-            }
-        )
-    }
     
     private func setupCaptureSession(withPosition cameraPosition: AVCaptureDevice.Position, withQuality videoQuality: AVCaptureSession.Preset) {
         self.videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition)
@@ -414,17 +352,60 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         let audioInput = try! AVCaptureDeviceInput(device: audioDevice!)
         self.captureSession?.addInput(audioInput)
 
+        // Use traditional movie file output for reliable recording
         let captureOutput = AVCaptureMovieFileOutput()
         self.captureSession?.addOutput(captureOutput)
 
-        self.applyOutputLimits()
-
+        // Set session preset for native resolution
         if self.canSetVideoQuality(videoQuality) {
             self.setVideoQuality(videoQuality)
-            self.applyOutputLimits()
         }
 
         self.captureSession?.startRunning()
+    }
+    
+    
+    private func getNativeSensorDimensions(for device: AVCaptureDevice) -> (Int, Int) {
+        // Get the highest resolution format available
+        let formats = device.formats.sorted { format1, format2 in
+            let dimensions1 = CMVideoFormatDescriptionGetDimensions(format1.formatDescription)
+            let dimensions2 = CMVideoFormatDescriptionGetDimensions(format2.formatDescription)
+            return (dimensions1.width * dimensions1.height) > (dimensions2.width * dimensions2.height)
+        }
+        
+        if let highestFormat = formats.first {
+            let dimensions = CMVideoFormatDescriptionGetDimensions(highestFormat.formatDescription)
+            return (Int(dimensions.width), Int(dimensions.height))
+        }
+        
+        // Fallback to common resolutions
+        return (1920, 1080)
+    }
+    
+    private func getCurrentSessionResolution() -> (width: Int, height: Int) {
+        guard let captureSession = self.captureSession else {
+            return (width: 1920, height: 1080)
+        }
+        
+        // Map session presets to resolutions
+        switch captureSession.sessionPreset {
+        case .high:
+            return (width: 1920, height: 1080)
+        case .medium:
+            return (width: 1280, height: 720)
+        case .low:
+            return (width: 640, height: 480)
+        case .hd1280x720:
+            return (width: 1280, height: 720)
+        case .hd1920x1080:
+            return (width: 1920, height: 1080)
+        case .hd4K3840x2160:
+            return (width: 3840, height: 2160)
+        case .photo:
+            return (width: 1920, height: 1080)
+        default:
+            return (width: 1920, height: 1080)
+        }
     }
     
     private func setupPreviewLayer() {
@@ -432,6 +413,13 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
         self.previewLayer?.frame = self.getPresetPreviewFrame()
         self.previewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
+        
+        // Set preview connection orientation to match recording
+        if let connection = self.previewLayer?.connection,
+           connection.isVideoOrientationSupported {
+            connection.videoOrientation = .portrait
+        }
+        
         self.view.layer.addSublayer(self.previewLayer!)
     }
     
@@ -712,8 +700,6 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             }, completion: {(isCompleted) in
                 sender.isEnabled = true
 
-                let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
-                let tempFileURL   = tempDirectory.appendingPathComponent("temp.mov")
                 try? FileManager.default.removeItem(at: tempFileURL)
 
                 // start recording
@@ -745,6 +731,31 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             }
         }
         self.captureSession?.stopRunning()
+    }
+    
+    nonisolated public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
+        Task { @MainActor in
+        }
+    }
+    
+    nonisolated public func fileOutput(_ output: AVCaptureFileOutput,
+                                       didFinishRecordingTo outputFileURL: URL,
+                                       from connections: [AVCaptureConnection],
+                                       error: Error?) {
+        Task { @MainActor in
+            self.handleDidFinishRecording(outputURL: outputFileURL, error: error)
+        }
+    }
+
+    @MainActor
+    private func handleDidFinishRecording(outputURL: URL, error: Error?) {
+        guard self.isAppOnForeground else { return }
+
+        if let e = error {
+            debugPrint("[FlexibleAVCapture] didFinishRecording error:", e)
+        }
+
+        self.handleRecordingCompletion(outputURL: outputURL)
     }
     
     private func getPresetPreviewFrame() -> CGRect {
@@ -831,6 +842,8 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.buttonForWideFrame.isEnabled = false
         self.buttonForTallFrame.isEnabled = false
         self.reverseButton.isEnabled = false
+        // Keep record button enabled so user can stop recording
+        self.recordButton.isEnabled = true
     }
     
     private func saveSliderValue() {
@@ -893,4 +906,52 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.indicator.stopAnimating()
         self.indicatorView.removeFromSuperview()
     }
+    
+    private func handleRecordingCompletion(outputURL: URL) {
+        let asset = AVAsset(url: outputURL)
+        let videoTracks = asset.tracks(withMediaType: .video)
+        
+        // Check if video tracks exist
+        guard !videoTracks.isEmpty else {
+            debugPrint("No video tracks found in recorded file")
+            DispatchQueue.main.async {
+                self.recordButton.isEnabled = true
+                self.enableOperatableUIs()
+                self.dismissIndicatorView()
+                // Still notify delegate with original file if it has audio
+                self.delegate?.didCapture(withFileURL: outputURL)
+            }
+            return
+        }
+        
+        let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
+        let reoutputFileURL = tempDirectory.appendingPathComponent("mytemp.mov")
+
+        let tempVideoTrack = videoTracks[0]
+        let (orientation, _) = self.calculateOrientationFromTransform(tempVideoTrack.preferredTransform)
+        let croppingRect = self.calculateCroppingRect(
+            originalMovieSize: tempVideoTrack.naturalSize,
+            orientation: orientation,
+            previewFrameRect: (self.previewLayer?.bounds)!,
+            fullFrameRect: self.view.bounds
+        )
+
+        self.cropMovie(
+            sourceURL: outputURL,
+            destinationURL: reoutputFileURL,
+            fileType: .mov,
+            croppingRect: croppingRect,
+            complition: { [weak self] in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    self.recordButton.isEnabled = true
+                    self.enableOperatableUIs()
+                    self.saveSliderValue()
+                    self.delegate?.didCapture(withFileURL: reoutputFileURL)
+                    self.dismissIndicatorView()
+                }
+            }
+        )
+    }
+    
 }
