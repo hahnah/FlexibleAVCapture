@@ -265,7 +265,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     private var allowsResizing_: Bool = true
     private var allowsReversingCamera_: Bool = true
     private var allowsSoundEffect_: Bool = true
-    private var videoQuality_: AVCaptureSession.Preset = .high
+    private var videoQuality_: AVCaptureSession.Preset = .photo
     
     private var captureSession: AVCaptureSession? = nil
     private var videoDevice: AVCaptureDevice?
@@ -402,7 +402,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         case .hd4K3840x2160:
             return (width: 3840, height: 2160)
         case .photo:
-            return (width: 1920, height: 1080)
+            return (width: 1440, height: 1080)
         default:
             return (width: 1920, height: 1080)
         }
