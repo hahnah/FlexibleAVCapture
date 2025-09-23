@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol FlexibleAVCaptureDelegate {
-    
+
     func didCapture(withFileURL fileURL: URL) -> Void
-    
+
 }

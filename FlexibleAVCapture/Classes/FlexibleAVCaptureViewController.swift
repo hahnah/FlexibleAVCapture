@@ -14,7 +14,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     public var maximumRecordFileSize: Int64 = 0 // 0 = 無制限
     public var minimumFreeDiskSpaceLimit: Int64 = 50 * 1024 * 1024 // 任意の安全マージン
     public var exportQuality: String = AVAssetExportPresetHighestQuality
-    
+
     public var delegate: FlexibleAVCaptureDelegate? = nil
     public var maximumRecordDuration: CMTime {
         get { return self.maximumRecordDuration_ }
@@ -78,23 +78,23 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.allowsSoundEffect_ = ifAllowed
         }
     }
-    
+
     public init() {
         super.init(nibName: nil, bundle: nil)
         self.cameraPosition_ = .back
         self.setupCaptureSession(withPosition: self.cameraPosition, withQuality: self.videoQuality)
     }
-    
+
     public init(cameraPosition: AVCaptureDevice.Position) {
         super.init(nibName: nil, bundle: nil)
         self.cameraPosition_ = cameraPosition
         self.setupCaptureSession(withPosition: self.cameraPosition, withQuality: self.videoQuality)
     }
-    
+
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     public func reverseCameraPosition() {
         guard let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else {
             debugPrint("Failed to reverseCameraPosition because there is no capture session's output.")
@@ -104,7 +104,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             debugPrint("Failed to reverseCameraPosition because the recording still working.")
             return
         }
-        
+
         self.saveSliderValue()
 
         self.captureSession?.stopRunning()
@@ -114,16 +114,16 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.captureSession?.outputs.forEach { output in
             self.captureSession?.removeOutput(output)
         }
-        
+
         self.cameraPosition_ = self.cameraPosition == .front ? .back : .front
-        
+
         // prepare new capture session preview with opposite camera
         let newCameraPosition: AVCaptureDevice.Position = self.videoDevice?.position == .front ? .back : .front
         self.setupCaptureSession(withPosition: newCameraPosition, withQuality: self.videoQuality)
         let newVideoLayer: AVCaptureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: self.captureSession!)
         newVideoLayer.frame = self.view.bounds
         newVideoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        
+
         // horizontal flip
         UIView.transition(with: self.view, duration: 1.0, options: [.transitionFlipFromLeft], animations: nil, completion: { _ in
             // replace camera preview with new one
@@ -133,7 +133,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.applyPresetPreviewFrame()
         })
     }
-    
+
     public func canSetVideoQuality(_ videoQuality: AVCaptureSession.Preset) -> Bool {
         guard !((self.captureSession?.outputs.first as? AVCaptureMovieFileOutput)?.isRecording ?? true) else {
             return false
@@ -148,7 +148,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.captureSession?.commitConfiguration()
         return result
     }
-    
+
     public func setVideoQuality(_ videoQuality: AVCaptureSession.Preset) {
         guard !((self.captureSession?.outputs.first as? AVCaptureMovieFileOutput)?.isRecording ?? true)  else {
             debugPrint("Failed to setVideoQuality, because the capture session is still running or there is no capture session.")
@@ -163,7 +163,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         self.captureSession?.commitConfiguration()
     }
-    
+
     public func replaceFullFramingButton(with button: UIButton) {
         if self.isViewLoaded {
             button.addTarget(self, action: #selector(self.onTapButtonForFullFrame(sender:)), for: .touchUpInside)
@@ -175,7 +175,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.isButtonForFullFrameReserved = true
         }
     }
-    
+
     public func replaceSquareFramingButton(with button: UIButton) {
         if self.isViewLoaded {
             button.addTarget(self, action: #selector(self.onTapButtonForSquareFrame(sender:)), for: .touchUpInside)
@@ -187,7 +187,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.isButtonForSquareFrameReserved = true
         }
     }
-    
+
     public func replaceWideFramingButton(with button: UIButton) {
         if self.isViewLoaded {
             button.addTarget(self, action: #selector(self.onTapButtonForWideFrame(sender:)), for: .touchUpInside)
@@ -199,7 +199,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.isButtonForWideFrameReserved = true
         }
     }
-    
+
     public func replaceTallFramingButton(with button: UIButton) {
         if self.isViewLoaded {
             button.addTarget(self, action: #selector(self.onTapButtonForTallFrame(sender:)), for: .touchUpInside)
@@ -211,7 +211,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.isButtonForTallFrameReserved = true
         }
     }
-    
+
     public func replaceResizingSlider(with slider: UISlider) {
         if self.isViewLoaded {
             slider.minimumValue = self.slider.minimumValue
@@ -226,7 +226,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.isSliderReserved = true
         }
     }
-    
+
     public func replaceRecordButton(with button: UIButton) {
         if self.isViewLoaded {
             button.addTarget(self, action: #selector(self.onTapRecordButton(sender:)), for: .touchUpInside)
@@ -238,7 +238,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.isRecordButtonReserved = true
         }
     }
-    
+
     public func replaceReverseButton(with button: UIButton) {
         if self.isViewLoaded {
             button.addTarget(self, action: #selector(self.onTapReverseButton(sender:)), for: .touchUpInside)
@@ -250,7 +250,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             self.isReverseButtonReserved = true
         }
     }
-    
+
     public func forceResize(withResizingParameter resizingParameter: Float) {
         guard 0 <= resizingParameter && resizingParameter <= 1.0 else {
             debugPrint("Illegal parameter in forceResize. withResizingParameter should fulill the condition 0 ≦ withResizingParameter ≦ 1.")
@@ -258,7 +258,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         self.forcePreviewFrameToResize(withResizingParameter: resizingParameter)
     }
-    
+
     private var maximumRecordDuration_: CMTime = .invalid
     private var cameraPosition_: AVCaptureDevice.Position = .back
     private var minimumFrameRatio_: CGFloat = 0.34
@@ -266,10 +266,10 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
     private var allowsReversingCamera_: Bool = true
     private var allowsSoundEffect_: Bool = true
     private var videoQuality_: AVCaptureSession.Preset = .photo
-    
+
     private var captureSession: AVCaptureSession? = nil
     private var videoDevice: AVCaptureDevice?
-    
+
     private var baseZoomFanctor: CGFloat = 1.0
     private var previewLayer: AVCaptureVideoPreviewLayer? = nil
     private var slider: UISlider = UISlider()
@@ -302,7 +302,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                                     1.0]
     private let soundIDForBeginVideoRecording: SystemSoundID = 1117
     private let soundIDForEndVideoRecording: SystemSoundID = 1118
-    
+
     // support only portrait so far
     override open var shouldAutorotate: Bool {
         get {
@@ -314,7 +314,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             return .portrait
         }
     }
-    
+
     override open func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.black
@@ -327,19 +327,19 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.setupForegroundObserver()
         self.setupBackgroundObserver()
     }
-    
+
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if !(self.captureSession?.isRunning ?? false) {
             self.captureSession?.startRunning()
         }
     }
-    
+
     override open func viewDidDisappear(_ animated: Bool) {
         self.captureSession?.stopRunning()
     }
-    
-    
+
+
     private func setupCaptureSession(withPosition cameraPosition: AVCaptureDevice.Position, withQuality videoQuality: AVCaptureSession.Preset) {
         self.videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition)
         let audioDevice = AVCaptureDevice.default(for: .audio)
@@ -363,8 +363,8 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
 
         self.captureSession?.startRunning()
     }
-    
-    
+
+
     private func getNativeSensorDimensions(for device: AVCaptureDevice) -> (Int, Int) {
         // Get the highest resolution format available
         let formats = device.formats.sorted { format1, format2 in
@@ -372,21 +372,21 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             let dimensions2 = CMVideoFormatDescriptionGetDimensions(format2.formatDescription)
             return (dimensions1.width * dimensions1.height) > (dimensions2.width * dimensions2.height)
         }
-        
+
         if let highestFormat = formats.first {
             let dimensions = CMVideoFormatDescriptionGetDimensions(highestFormat.formatDescription)
             return (Int(dimensions.width), Int(dimensions.height))
         }
-        
+
         // Fallback to common resolutions
         return (1920, 1080)
     }
-    
+
     private func getCurrentSessionResolution() -> (width: Int, height: Int) {
         guard let captureSession = self.captureSession else {
             return (width: 1920, height: 1080)
         }
-        
+
         // Map session presets to resolutions
         switch captureSession.sessionPreset {
         case .high:
@@ -407,22 +407,22 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             return (width: 1920, height: 1080)
         }
     }
-    
+
     private func setupPreviewLayer() {
         // preview layer
         self.previewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
         self.previewLayer?.frame = self.getPresetPreviewFrame()
         self.previewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
-        
+
         // Set preview connection orientation to match recording
         if let connection = self.previewLayer?.connection,
            connection.isVideoOrientationSupported {
             connection.videoOrientation = .portrait
         }
-        
+
         self.view.layer.addSublayer(self.previewLayer!)
     }
-    
+
     private func setupOperatableUIs() {
         // slider for adjusting camera preview size
         if self.isSliderReserved {
@@ -441,7 +441,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.slider.value = 0.0
         self.slider.addTarget(self, action: #selector(self.onSliderChanged(sender:)), for: .valueChanged)
         self.view.addSubview(self.slider)
-        
+
         // button on slider for wide frame
         if self.isButtonForWideFrameReserved {
             if let reservedButton = self.reservedButtonForWideFrame {
@@ -457,7 +457,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         self.buttonForWideFrame.addTarget(self, action: #selector(self.onTapButtonForWideFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForWideFrame)
-        
+
         // button on slider for square frame
         if self.isButtonForSquareFrameReserved {
             if let reservedButton = self.reservedButtonForSquareFrame {
@@ -473,7 +473,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         self.buttonForSquareFrame.addTarget(self, action: #selector(self.onTapButtonForSquareFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForSquareFrame)
-        
+
         // button on slider for full frame
         if self.isButtonForFullFrameReserved {
             if let reservedButton = self.reservedButtonForFullFrame {
@@ -489,7 +489,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         self.buttonForFullFrame.addTarget(self, action: #selector(self.onTapButtonForFullFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForFullFrame)
-        
+
         // button on slider for tall frame
         if self.isButtonForTallFrameReserved {
             if let reservedButton = self.reservedButtonForTallFrame {
@@ -505,7 +505,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         self.buttonForTallFrame.addTarget(self, action: #selector(self.onTapButtonForTallFrame(sender:)), for: .touchUpInside)
         self.view.addSubview(self.buttonForTallFrame)
-        
+
         // record button
         if self.isRecordButtonReserved {
             if let reservedButton = self.reservedRecordButton {
@@ -531,7 +531,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         self.recordButton.addTarget(self, action: #selector(self.onTapRecordButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.recordButton)
-        
+
         // camera-reversing button
         if self.isReverseButtonReserved {
             if let reservedButton = self.reservedReverseButton {
@@ -550,19 +550,19 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.reverseButton.addTarget(self, action: #selector(self.onTapReverseButton(sender:)), for: .touchUpInside)
         self.view.addSubview(self.reverseButton)
     }
-    
+
     private func setupPinchGestureRecognizer() {
         // pinch recognizer for zooming
         let pinchGestureRecognizer: UIPinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(self.onPinchGesture(_:)))
         self.view.addGestureRecognizer(pinchGestureRecognizer)
     }
-    
+
     private func setupTapGestureRecognizer() {
         // tap recognizer for focusing
         let tapGestureRecognizer: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(self.onTapGesture(_:)))
         self.view.addGestureRecognizer(tapGestureRecognizer)
     }
-    
+
     private func setupIndicatorView() {
         if #available(iOS 13.0, *) {
             self.indicator = UIActivityIndicatorView(style: .large)
@@ -575,40 +575,40 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.indicatorView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         self.indicatorView.addSubview(self.indicator)
     }
-    
+
     private func setupForegroundObserver() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
     }
-    
+
     private func setupBackgroundObserver() {
         NotificationCenter.default.addObserver(self, selector: #selector(self.didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
-    
+
     @objc private func onSliderChanged(sender: UISlider) {
         self.previewLayer?.frame = createResizedPreviewFrame(withResizingParameter: slider.value)
     }
-    
+
     @objc private func onTapButtonForWideFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[0])
     }
-    
+
     @objc private func onTapButtonForSquareFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[1])
     }
-    
+
     @objc private func onTapButtonForFullFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[2])
     }
-    
+
     @objc private func onTapButtonForTallFrame(sender: UIButton) {
         self.forcePreviewFrameToResize(withResizingParameter: self.boundaries[3])
     }
-    
+
     @objc private func onPinchGesture(_ sender: UIPinchGestureRecognizer) {
         if sender.state == .began {
             self.baseZoomFanctor = (self.videoDevice?.videoZoomFactor)!
         }
-        
+
         let tempZoomFactor: CGFloat = self.baseZoomFanctor * sender.scale
         let newZoomFactdor: CGFloat
         if tempZoomFactor < (self.videoDevice?.minAvailableVideoZoomFactor)! {
@@ -618,7 +618,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         } else {
             newZoomFactdor = tempZoomFactor
         }
-        
+
         do {
             try self.videoDevice?.lockForConfiguration()
             self.videoDevice?.ramp(toVideoZoomFactor: newZoomFactdor, withRate: 32.0)
@@ -627,7 +627,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             print("Failed to change zoom factor.")
         }
     }
-    
+
     @objc private func onTapGesture(_ sender: UITapGestureRecognizer) {
         let tapCGPoint = sender.location(ofTouch: 0, in: sender.view)
         let focusView: UIView = UIView()
@@ -638,7 +638,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         focusView.layer.borderWidth = 2
         focusView.alpha = 1
         sender.view?.addSubview(focusView)
-        
+
         UIView.animate(withDuration: 0.5, animations: {
             focusView.frame.size = CGSize(width: 80, height: 80)
             focusView.center = tapCGPoint
@@ -649,25 +649,25 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                     focusView.removeFromSuperview()
             })
         })
-        
+
         // Convert tap point to normalized device coordinates
         guard let previewLayer = self.previewLayer else { return }
         let devicePoint = previewLayer.captureDevicePointConverted(fromLayerPoint: tapCGPoint)
-        
+
         self.focusWithMode(focusMode: .autoFocus, exposeWithMode: .autoExpose, atDevicePoint: devicePoint, motiorSubjectAreaChange: true)
     }
-    
+
     @objc private func onTapRecordButton(sender: UIButton) {
         guard let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput else {
             return
         }
-        
+
         if captureOutput.isRecording {
             // ring sound
             if self.allowsSoundEffect {
                 AudioServicesPlaySystemSound(self.soundIDForEndVideoRecording)
             }
-            
+
             // animate button and avoid double tap
             self.recordButton.alpha = 0.3
             self.recordButton.isEnabled = false
@@ -676,11 +676,11 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             }, completion: {(isCompleted) in
                 self.recordButton.isEnabled = true
             })
-            
+
             // stop recording
             self.recordButton.isSelected = false
             captureOutput.stopRecording()
-            
+
             // show indicator
             self.showIndicatorView()
         } else {
@@ -688,10 +688,10 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             if self.allowsSoundEffect {
                 AudioServicesPlaySystemSound(self.soundIDForBeginVideoRecording)
             }
-            
+
             let tempDirectory: URL = URL(fileURLWithPath: NSTemporaryDirectory())
             let tempFileURL: URL = tempDirectory.appendingPathComponent("temp.mov")
-     
+
             // animate button and avoid double tap
             sender.alpha = 0.3
             sender.isEnabled = false
@@ -705,21 +705,21 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                 // start recording
                 captureOutput.startRecording(to: tempFileURL, recordingDelegate: self)
             })
-            
+
             self.recordButton.isSelected = true
             self.disableOperatableUIs()
         }
     }
-    
+
     @objc private func onTapReverseButton(sender: UIButton) {
         self.reverseCameraPosition()
     }
-    
+
     @objc private func willEnterForeground() {
         self.isAppOnForeground = true
         self.captureSession?.startRunning()
     }
-    
+
     @objc private func didEnterBackground() {
         self.isAppOnForeground = false
         if let captureOutput: AVCaptureMovieFileOutput = self.captureSession?.outputs.first as? AVCaptureMovieFileOutput {
@@ -732,12 +732,12 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         self.captureSession?.stopRunning()
     }
-    
+
     nonisolated public func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
         Task { @MainActor in
         }
     }
-    
+
     nonisolated public func fileOutput(_ output: AVCaptureFileOutput,
                                        didFinishRecordingTo outputFileURL: URL,
                                        from connections: [AVCaptureConnection],
@@ -757,11 +757,11 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
 
         self.handleRecordingCompletion(outputURL: outputURL)
     }
-    
+
     private func getPresetPreviewFrame() -> CGRect {
         return self.view.bounds
     }
-    
+
     private func applyPresetPreviewFrame() {
         let userDefaults: UserDefaults = UserDefaults.standard
         let boundaryForFullFrame: Float = self.boundaries[2]
@@ -769,19 +769,19 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         let presetSliderValue: Float = userDefaults.object(forKey: "sliderValueForCameraFrame") as! Float
         self.forcePreviewFrameToResize(withResizingParameter: presetSliderValue)
     }
-    
+
     private func createResizedPreviewFrame(withResizingParameter resizingParameter: Float) -> CGRect {
         guard self.boundaries[0] <= resizingParameter && resizingParameter <= self.boundaries[self.boundaries.count - 1] else {
             return self.view.bounds
         }
-        
+
         let maximumWidth: CGFloat = self.view.bounds.width
         let maximumHeight: CGFloat = self.view.bounds.height
         let minimumWidth: CGFloat = maximumHeight * self.minimumFrameRatio_
         let minimumHeight: CGFloat = maximumWidth * self.minimumFrameRatio_
         let squareWidth: CGFloat = maximumWidth
         let squareHeight: CGFloat = maximumWidth
-        
+
         var resizingCoefficient: Array<CGFloat> = []
         for (i, boundary) in self.boundaries.enumerated() {
             if (i == 0) {
@@ -790,7 +790,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                 resizingCoefficient.append(CGFloat((resizingParameter - self.boundaries[i-1]) / (boundary - self.boundaries[i-1])))
             }
         }
-        
+
         let resultWidth: CGFloat!
         let resultHeight: CGFloat!
         if (resizingParameter < self.boundaries[1]) {
@@ -808,24 +808,24 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         }
         let resultX: CGFloat = (maximumWidth - resultWidth) * 0.5
         let resultY: CGFloat = (maximumHeight - resultHeight) * 0.5
-        
+
         let resultRect: CGRect = CGRect(x: resultX, y: resultY, width: resultWidth, height: resultHeight)
         return resultRect
     }
-    
+
     private func forcePreviewFrameToResize(withResizingParameter resizingParameter: Float) {
         self.slider.value = resizingParameter
         self.previewLayer?.frame = createResizedPreviewFrame(withResizingParameter: self.slider.value)
     }
-    
+
     private func cropMovie(sourceURL: URL, destinationURL: URL, fileType: AVFileType, croppingRect: CGRect, complition: @escaping () -> Void) {
         self.exportMovie(sourceURL: sourceURL, destinationURL: destinationURL, fileType: fileType, fullFrameRect: self.view.bounds, croppingRect: croppingRect, completion: complition)
     }
-    
+
     private func calculateCroppingRect(originalMovieSize: CGSize, orientation: UIImage.Orientation, previewFrameRect: CGRect, fullFrameRect: CGRect) -> CGRect {
         return self.calculateCroppingRect(movieSize: originalMovieSize, movieOrientation: orientation ,previewFrameRect: previewFrameRect, fullFrameRect: fullFrameRect)
     }
-    
+
     private func enableOperatableUIs() {
         self.buttonForFullFrame.isEnabled = true
         self.buttonForSquareFrame.isEnabled = true
@@ -834,7 +834,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.slider.isEnabled = true
         self.reverseButton.isEnabled = true
     }
-    
+
     private func disableOperatableUIs() {
         self.slider.isEnabled = false
         self.buttonForFullFrame.isEnabled = false
@@ -845,13 +845,13 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         // Keep record button enabled so user can stop recording
         self.recordButton.isEnabled = true
     }
-    
+
     private func saveSliderValue() {
         let userDefaults: UserDefaults = UserDefaults.standard
         userDefaults.set(self.slider.value, forKey: "sliderValueForCameraFrame")
         userDefaults.synchronize()
     }
-    
+
     private func showResizingUIs() {
         self.slider.isHidden = false
         self.buttonForFullFrame.isHidden = false
@@ -859,7 +859,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.buttonForWideFrame.isHidden = false
         self.buttonForTallFrame.isHidden = false
     }
-    
+
     private func hideResizingUIs() {
         self.slider.isHidden = true
         self.buttonForFullFrame.isHidden = true
@@ -867,15 +867,15 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
         self.buttonForWideFrame.isHidden = true
         self.buttonForTallFrame.isHidden = true
     }
-    
+
     private func showReversingButton() {
         self.reverseButton.isHidden = false
     }
-    
+
     private func hideReversingButton() {
         self.reverseButton.isHidden = true
     }
-    
+
     private func focusWithMode(focusMode : AVCaptureDevice.FocusMode, exposeWithMode expusureMode :AVCaptureDevice.ExposureMode, atDevicePoint point:CGPoint, motiorSubjectAreaChange monitorSubjectAreaChange:Bool) {
             let device : AVCaptureDevice = self.videoDevice!
         do {
@@ -888,29 +888,29 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
                 device.exposurePointOfInterest = point
                 device.exposureMode = expusureMode
             }
-            
+
             device.isSubjectAreaChangeMonitoringEnabled = monitorSubjectAreaChange
             device.unlockForConfiguration()
-            
+
         } catch let error as NSError {
             print(error.debugDescription)
         }
     }
-    
+
     private func showIndicatorView() {
         self.view.addSubview(self.indicatorView)
         self.indicator.startAnimating()
     }
-    
+
     private func dismissIndicatorView() {
         self.indicator.stopAnimating()
         self.indicatorView.removeFromSuperview()
     }
-    
+
     private func handleRecordingCompletion(outputURL: URL) {
         let asset = AVAsset(url: outputURL)
         let videoTracks = asset.tracks(withMediaType: .video)
-        
+
         // Check if video tracks exist
         guard !videoTracks.isEmpty else {
             debugPrint("No video tracks found in recorded file")
@@ -923,7 +923,7 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             }
             return
         }
-        
+
         let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
         let reoutputFileURL = tempDirectory.appendingPathComponent("mytemp.mov")
 
@@ -953,5 +953,5 @@ open class FlexibleAVCaptureViewController: UIViewController, AVCaptureFileOutpu
             }
         )
     }
-    
+
 }

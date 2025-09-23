@@ -9,7 +9,7 @@ import FlexibleAVCapture
 import Photos
 
 class CameraViewController: FlexibleAVCaptureViewController, FlexibleAVCaptureDelegate {
-    
+
     func didCapture(withFileURL fileURL: URL) {
         PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: fileURL)
@@ -24,5 +24,5 @@ class CameraViewController: FlexibleAVCaptureViewController, FlexibleAVCaptureDe
             }
         }
     }
-    
+
 }
