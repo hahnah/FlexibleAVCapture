@@ -14,21 +14,21 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         DispatchQueue.main.async {
             let cameraViewController: CameraViewController = CameraViewController(cameraPosition: .back)
             cameraViewController.delegate = cameraViewController
-            
+
             cameraViewController.modalPresentationStyle = .fullScreen
             cameraViewController.maximumRecordDuration = CMTimeMake(value: 60, timescale: 1)
             cameraViewController.minimumFrameRatio = 0.16
             if cameraViewController.canSetVideoQuality(.high) {
                 cameraViewController.setVideoQuality(.high)
             }
-            
+
             self.present(cameraViewController, animated: true, completion: nil)
         }
     }
